@@ -1,0 +1,170 @@
+{
+  "agent_roi": [
+    {
+      "agent": "junior-developer",
+      "count": 4,
+      "total_input": 5,
+      "total_output": 3853,
+      "avg_input": 1.25,
+      "avg_output": 963.25,
+      "roi": 770.6,
+      "success_rate": 75.0
+    },
+    {
+      "agent": "documentation-writer",
+      "count": 28,
+      "total_input": 42,
+      "total_output": 10470,
+      "avg_input": 1.5,
+      "avg_output": 373.92857142857144,
+      "roi": 249.28571428571428,
+      "success_rate": 78.57142857142857
+    },
+    {
+      "agent": "senior-developer",
+      "count": 70,
+      "total_input": 148,
+      "total_output": 26122,
+      "avg_input": 2.1142857142857143,
+      "avg_output": 373.1714285714286,
+      "roi": 176.5,
+      "success_rate": 87.14285714285714
+    },
+    {
+      "agent": "git-workflow-manager",
+      "count": 167,
+      "total_input": 307,
+      "total_output": 53245,
+      "avg_input": 1.8383233532934131,
+      "avg_output": 318.83233532934133,
+      "roi": 173.43648208469057,
+      "success_rate": 90.41916167664671
+    },
+    {
+      "agent": "refactoring-specialist",
+      "count": 44,
+      "total_input": 148,
+      "total_output": 25024,
+      "avg_input": 3.3636363636363638,
+      "avg_output": 568.7272727272727,
+      "roi": 169.0810810810811,
+      "success_rate": 86.36363636363636
+    },
+    {
+      "agent": "developer",
+      "count": 377,
+      "total_input": 945,
+      "total_output": 156997,
+      "avg_input": 2.506631299734748,
+      "avg_output": 416.43766578249335,
+      "roi": 166.13439153439154,
+      "success_rate": 80.90185676392572
+    },
+    {
+      "agent": "code-quality-analyst",
+      "count": 84,
+      "total_input": 279,
+      "total_output": 42018,
+      "avg_input": 3.3214285714285716,
+      "avg_output": 500.2142857142857,
+      "roi": 150.6021505376344,
+      "success_rate": 88.09523809523809
+    },
+    {
+      "agent": "integration-specialist",
+      "count": 58,
+      "total_input": 159,
+      "total_output": 23642,
+      "avg_input": 2.7413793103448274,
+      "avg_output": 407.62068965517244,
+      "roi": 148.69182389937106,
+      "success_rate": 77.58620689655173
+    },
+    {
+      "agent": "backlog-manager",
+      "count": 170,
+      "total_input": 481,
+      "total_output": 63541,
+      "avg_input": 2.8294117647058825,
+      "avg_output": 373.7705882352941,
+      "roi": 132.1018711018711,
+      "success_rate": 74.70588235294117
+    },
+    {
+      "agent": "architecture-reviewer",
+      "count": 91,
+      "total_input": 314,
+      "total_output": 38526,
+      "avg_input": 3.4505494505494507,
+      "avg_output": 423.3626373626374,
+      "roi": 122.69426751592357,
+      "success_rate": 90.10989010989012
+    },
+    {
+      "agent": "project-framer",
+      "count": 44,
+      "total_input": 164,
+      "total_output": 17293,
+      "avg_input": 3.727272727272727,
+      "avg_output": 393.02272727272725,
+      "roi": 105.4451219512195,
+      "success_rate": 84.0909090909091
+    },
+    {
+      "agent": "general-purpose",
+      "count": 56,
+      "total_input": 203,
+      "total_output": 18354,
+      "avg_input": 3.625,
+      "avg_output": 327.75,
+      "roi": 90.41379310344827,
+      "success_rate": 75.0
+    },
+    {
+      "agent": "solution-architect",
+      "count": 116,
+      "total_input": 557,
+      "total_output": 39396,
+      "avg_input": 4.801724137931035,
+      "avg_output": 339.62068965517244,
+      "roi": 70.72890484739676,
+      "success_rate": 83.62068965517241
+    },
+    {
+      "agent": "performance-optimizer",
+      "count": 21,
+      "total_input": 107,
+      "total_output": 3863,
+      "avg_input": 5.095238095238095,
+      "avg_output": 183.95238095238096,
+      "roi": 36.10280373831776,
+      "success_rate": 85.71428571428571
+    }
+  ],
+  "period_tokens": {
+    "P2": {
+      "delegations": 151,
+      "total_input": 454,
+      "total_output": 52702,
+      "avg_input": 3.006622516556291,
+      "avg_output": 349.0198675496689,
+      "roi": 116.08370044052863
+    },
+    "P3": {
+      "delegations": 857,
+      "total_input": 2342,
+      "total_output": 334611,
+      "avg_input": 2.732788798133022,
+      "avg_output": 390.44457409568264,
+      "roi": 142.8740392826644
+    },
+    "P4": {
+      "delegations": 322,
+      "total_input": 1063,
+      "total_output": 135031,
+      "avg_input": 3.301242236024845,
+      "avg_output": 419.35093167701865,
+      "roi": 127.02822201317028
+    }
+  }
+}

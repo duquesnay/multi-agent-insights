@@ -1,0 +1,76 @@
+# Data directories (cache and extracted data)
+data/
+analysis_results/
+pipeline_execution_log.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Legacy/exploratory scripts (replaced by modular architecture)
+analyze_antipatterns.py
+deep_antipattern_analysis.py
+refactoring_opportunities.py
+deep_roi_analysis.py
+surprising_insights.py
+analyze_temporal_patterns.py
+extract_full_conversations.py
+segment_timeline_extended.py
+extract_historical_snapshots.py
+analyze_system_metrics.py
+analyze_transitions.py
+analyze_performance.py
+communication_analysis.py
+prompt_analysis.py
+prompt_examples_analysis.py
+deep_analysis.py
+analyze_good_routing.py
+update_scripts.py
+fix_imports.py
+analyze_delegations.py
+analyze_roi.py
+analyze_timeline.py
+analyze_metrics.py
+analyze_tokens_roi.py
+roi_analysis_detailed.py
+benchmark_scan.py
+benchmark_marathon_loops.py
+analyze_marathons_optimized.py
+benchmark_cache.py
+verify_cache.py
+verify_optimization.py
+profile_cache_load.py
+benchmark_pattern_matching.py
+analyze_marathons.py
+benchmark_streaming.py
+analyze_p4_marathons.py
+analyze_system_metrics_optimized.py
+benchmark_single_pass.py
+analyze_routing_quality.py
+example_schema_consumer.py
+validate_period_discovery.py
+segment_data_typed.py
+validate_data.py
+check_schema_versions.py
+scripts-inventory.md
+
+# Test coverage
+.coverage
+htmlcov/

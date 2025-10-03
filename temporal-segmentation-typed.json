@@ -1,0 +1,191 @@
+{
+  "segmentation_date": "2025-10-02T19:20:16.896714",
+  "methodology": "Typed domain model approach - see common/models.py",
+  "period_definitions": {
+    "P1": {
+      "period_id": "P1",
+      "name": "Launch + Vacances",
+      "start_date": "2025-08-04",
+      "end_date": "2025-09-02",
+      "changes": [
+        "Initial launch",
+        "Vacation period"
+      ],
+      "description": "Initial system launch and vacation period",
+      "duration_days": 30
+    },
+    "P2": {
+      "period_id": "P2",
+      "name": "Conception Added",
+      "start_date": "2025-09-03",
+      "end_date": "2025-09-11",
+      "changes": [
+        "+solution-architect",
+        "+project-framer"
+      ],
+      "description": "Addition of planning and design capabilities",
+      "duration_days": 9
+    },
+    "P3": {
+      "period_id": "P3",
+      "name": "D\u00e9l\u00e9gation Obligatoire",
+      "start_date": "2025-09-12",
+      "end_date": "2025-09-20",
+      "changes": [
+        "Mandatory delegation policy",
+        "+content-developer (Sept 15)",
+        "+refactoring-specialist (Sept 20)"
+      ],
+      "description": "Mandatory delegation with content and refactoring specialists",
+      "duration_days": 9
+    },
+    "P4": {
+      "period_id": "P4",
+      "name": "Post-Restructuration",
+      "start_date": "2025-09-21",
+      "end_date": "2025-09-30",
+      "changes": [
+        "developer \u2192 senior-developer + junior-developer (Sept 21 16h24)",
+        "Scope creep safeguards (Sept 21-22)",
+        "+parallel-worktree-framework (Sept 22)"
+      ],
+      "description": "Major restructuring with senior/junior split and safeguards",
+      "duration_days": 10
+    }
+  },
+  "summary": {
+    "P2": {
+      "period_id": "P2",
+      "period_name": "Conception Added",
+      "date_range": {
+        "start": "2025-09-03",
+        "end": "2025-09-11",
+        "duration_days": 9
+      },
+      "architectural_changes": [
+        "+solution-architect",
+        "+project-framer"
+      ],
+      "session_metrics": {
+        "total": 27,
+        "marathons": 1,
+        "marathon_rate": 0.037037037037037035,
+        "avg_delegations_per_session": 5.59
+      },
+      "delegation_metrics": {
+        "total": 151,
+        "success_rate": 0.788,
+        "successful": 119,
+        "total_tokens": 6960090,
+        "total_cost_usd": 2.8633
+      },
+      "agent_usage": {
+        "backlog-manager": 39,
+        "project-framer": 38,
+        "solution-architect": 21,
+        "developer": 18,
+        "general-purpose": 16,
+        "integration-specialist": 8,
+        "architecture-reviewer": 5,
+        "git-workflow-manager": 3,
+        "code-quality-analyst": 2,
+        "documentation-writer": 1
+      },
+      "efficiency": {
+        "delegations_per_day": 16.78,
+        "sessions_per_day": 3.0
+      }
+    },
+    "P3": {
+      "period_id": "P3",
+      "period_name": "D\u00e9l\u00e9gation Obligatoire",
+      "date_range": {
+        "start": "2025-09-12",
+        "end": "2025-09-20",
+        "duration_days": 9
+      },
+      "architectural_changes": [
+        "Mandatory delegation policy",
+        "+content-developer (Sept 15)",
+        "+refactoring-specialist (Sept 20)"
+      ],
+      "session_metrics": {
+        "total": 79,
+        "marathons": 9,
+        "marathon_rate": 0.11392405063291139,
+        "avg_delegations_per_session": 10.78
+      },
+      "delegation_metrics": {
+        "total": 852,
+        "success_rate": 0.864,
+        "successful": 736,
+        "total_tokens": 60780226,
+        "total_cost_usd": 23.1337
+      },
+      "agent_usage": {
+        "developer": 344,
+        "git-workflow-manager": 153,
+        "backlog-manager": 86,
+        "architecture-reviewer": 64,
+        "solution-architect": 63,
+        "code-quality-analyst": 53,
+        "integration-specialist": 34,
+        "general-purpose": 18,
+        "documentation-writer": 17,
+        "refactoring-specialist": 11
+      },
+      "efficiency": {
+        "delegations_per_day": 94.67,
+        "sessions_per_day": 8.78
+      }
+    },
+    "P4": {
+      "period_id": "P4",
+      "period_name": "Post-Restructuration",
+      "date_range": {
+        "start": "2025-09-21",
+        "end": "2025-09-30",
+        "duration_days": 10
+      },
+      "architectural_changes": [
+        "developer \u2192 senior-developer + junior-developer (Sept 21 16h24)",
+        "Scope creep safeguards (Sept 21-22)",
+        "+parallel-worktree-framework (Sept 22)"
+      ],
+      "session_metrics": {
+        "total": 36,
+        "marathons": 2,
+        "marathon_rate": 0.05555555555555555,
+        "avg_delegations_per_session": 6.86
+      },
+      "delegation_metrics": {
+        "total": 247,
+        "success_rate": 0.822,
+        "successful": 203,
+        "total_tokens": 16783726,
+        "total_cost_usd": 6.5486
+      },
+      "agent_usage": {
+        "senior-developer": 64,
+        "backlog-manager": 42,
+        "refactoring-specialist": 25,
+        "solution-architect": 25,
+        "code-quality-analyst": 16,
+        "architecture-reviewer": 13,
+        "integration-specialist": 13,
+        "git-workflow-manager": 11,
+        "documentation-writer": 10,
+        "developer": 9
+      },
+      "efficiency": {
+        "delegations_per_day": 24.7,
+        "sessions_per_day": 3.6
+      }
+    }
+  },
+  "comparison": {
+    "total_sessions": 142,
+    "total_delegations": 1250,
+    "marathon_threshold": 20
+  }
+}

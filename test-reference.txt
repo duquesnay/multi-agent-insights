@@ -1,0 +1,10 @@
+Analyse 3 sessions test.
+
+Méthodologie: @METHODOLOGIE-ANALYSE-RETROSPECTIVE.md
+
+Sessions à analyser:
+- S1: 25 delegations, 90% success, backlog-related
+- S2: 15 delegations, 85% success
+- S3: 30 delegations, 75% success, high cascade rate (60%)
+
+Applique la méthodologie. Classe les sessions selon framework.
