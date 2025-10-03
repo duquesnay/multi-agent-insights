@@ -1,10 +1,6 @@
-# Delegation Retrospective Analysis
+# Multi-Agent Insights
 
 Analysis toolkit for multi-agent delegation patterns in Claude Code sessions. Provides automated pipeline and scripts for extracting, analyzing, and understanding agent usage patterns, performance metrics, and collaboration workflows.
-
-## Project Health: 8.5/10
-
-Recent comprehensive refactoring completed (October 2025) - see `REFACTORING-COMPLETE.md` for details.
 
 ## Quick Start
 
@@ -111,53 +107,14 @@ total_cost = sum(s.total_cost() for s in sessions)
 avg_success = sum(s.success_rate() for s in sessions) / len(sessions)
 ```
 
-## Development
-
-### Running Tests
-```bash
-# All tests
-./run_tests.sh all
-
-# Unit tests only
-./run_tests.sh unit
-
-# Integration tests only
-./run_tests.sh integration
-
-# With coverage report
-./run_tests.sh coverage
-```
-
-### Test Requirements
-- **GREEN LINE**: All tests must pass (no exceptions)
-- Integration tests use real data (no mocks)
-- 64% coverage on critical paths
-
 ## Requirements
 
 - Python 3.10+
 - Dependencies: `ijson`, `numpy` (see `requirements-test.txt`)
 
-## Project Status
+## Contributing
 
-**Active** - Used for ongoing retrospective analysis of multi-agent system evolution.
-
-**Quality**: 8.5/10 project health after comprehensive refactoring
-- Zero hardcoded paths (portable)
-- Repository Pattern (DRY compliance)
-- Typed domain model (type safety)
-- 83 tests passing (regression prevention)
-- Performance optimized (3-14.5x improvements)
-
-See `REFACTORING-COMPLETE.md` for complete quality journey.
-
-## Commands
-
-Global commands available:
-- `/team-assemble` - Analyze project and propose optimal agent team
-
-Project-specific commands:
-- `/assess-agents` - Multi-agent system assessment following methodology
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and contribution guidelines.
 
 ## License
 
