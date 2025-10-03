@@ -253,6 +253,23 @@ python analysis_runner.py --all
 
 ---
 
+## Project Learnings
+
+### 2025-10-03 - GitHub publication with private/public separation
+
+**Methodological:**
+- `.gitignore` patterns can be too broad - captured CHANGELOG.md initially. Test with `git status` after each pattern added rather than all at once.
+- Local organization != Git organization. Users keep their local archives organized even if git doesn't see them. Separate "structure for me" from "structure for GitHub".
+
+**Technical:**
+- `git mv` preserves history but git-ignored files can be moved with regular `mv` without impacting the repo. Clarify this distinction to avoid confusion.
+
+**Decision Anchors:**
+- **Private archive structure**: For projects with dual public/private nature, use `analyses/{findings,methodology}/` + `reports/{implementation,performance}/`
+- **Root cleanup threshold**: If >10 non-code files at root, trigger docs/ reorganization
+
+---
+
 ## Principe Directeur
 
 > **"On analyse l'évolution d'un système vivant, pas un système statique."**
