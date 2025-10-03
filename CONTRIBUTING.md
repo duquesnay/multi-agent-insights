@@ -89,12 +89,6 @@ See [docs/STRATEGY-PATTERN-GUIDE.md](docs/STRATEGY-PATTERN-GUIDE.md) for step-by
 
 ## Project Commands
 
-### Global Commands
-
-- `/team-assemble` - Analyze project and propose optimal agent team
-
-### Project-Specific Commands
-
 - `/assess-agents` - Multi-agent system assessment following methodology
 
 ## Questions?

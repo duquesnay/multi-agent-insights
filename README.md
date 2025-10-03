@@ -26,47 +26,26 @@ Analyzes Claude Code agent delegation data to answer:
 - **How efficient is the system?** Token usage, costs, throughput
 - **What improves over time?** Temporal segmentation, comparative analysis
 
-## Key Features
+## Features
 
-- **Automated Pipeline** (`run_analysis_pipeline.py`) - 5-stage workflow with smart caching
-- **Typed Domain Model** - Type-safe entities (Delegation, Session, Period)
-- **Strategy Pattern** - Pluggable analysis modules
-- **Performance Optimized** - 3.8x faster caching, streaming for large datasets
-- **Test Suite** - 83 tests (64% coverage), integration tests with real data
-- **Schema Versioning** - Breaking change detection
+- Automated 5-stage analysis pipeline
+- Temporal segmentation across system evolution
+- Performance metrics (tokens, costs, throughput)
+- Routing quality and collaboration patterns
 
-## Documentation
+## Analyzing Your Multi-Agent System
 
-### Getting Started
-- **[Pipeline Guide](docs/PIPELINE.md)** - Complete pipeline documentation
-- **[Testing Guide](docs/TESTING.md)** - How to run and write tests
-
-### Architecture
-- **[Domain Model](docs/DOMAIN-MODEL.md)** - Typed entities and business logic
-- **[Strategy Pattern](docs/STRATEGY-PATTERN-GUIDE.md)** - Adding custom analyses
-- **[Schema Versioning](docs/SCHEMA-VERSIONING.md)** - Data format management
-- **[Streaming Migration](docs/STREAMING_MIGRATION_GUIDE.md)** - Large dataset handling
-
-## Project Structure
+Use the `/assess-agents` command in Claude Code to analyze your agent delegation patterns:
 
 ```
-delegation-retrospective/
-├── common/                    # Core infrastructure
-│   ├── config.py             # Centralized configuration
-│   ├── data_repository.py    # Data access layer
-│   ├── models.py             # Typed domain entities
-│   ├── metrics_service.py    # Token/cost calculations
-│   └── period_builder.py     # Dynamic period discovery
-├── strategies/                # Analysis strategies
-│   ├── metrics_analysis.py
-│   ├── marathon_analysis.py
-│   └── routing_quality_analysis.py
-├── tests/                     # Test suite (83 tests)
-├── data/                      # Extracted data and cache
-├── docs/                      # Documentation
-├── run_analysis_pipeline.py   # Main orchestrator
-└── analysis_runner.py         # Strategy executor
+/assess-agents project cold-chamber-ui
 ```
+
+This generates a comprehensive assessment including:
+- Agent adoption rates and usage patterns
+- Collaboration workflows between agents
+- Routing quality and efficiency metrics
+- Temporal analysis across system evolution
 
 ## Usage Examples
 
@@ -89,32 +68,17 @@ python analysis_runner.py --list
 
 # Run specific analysis
 python analysis_runner.py --metrics
-
-# Run all analyses
-python analysis_runner.py --all
 ```
 
-### Using Typed API
-```python
-from common.data_repository import load_sessions
+## Documentation
 
-# Load as typed objects
-sessions = load_sessions(typed=True)
-
-# Type-safe business logic
-marathons = [s for s in sessions if s.is_marathon()]
-total_cost = sum(s.total_cost() for s in sessions)
-avg_success = sum(s.success_rate() for s in sessions) / len(sessions)
-```
+- **[Pipeline Guide](docs/PIPELINE.md)** - Complete pipeline documentation
+- **[Contributing Guide](CONTRIBUTING.md)** - Development setup and standards
 
 ## Requirements
 
 - Python 3.10+
 - Dependencies: `ijson`, `numpy` (see `requirements-test.txt`)
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and contribution guidelines.
 
 ## License
 
@@ -122,4 +86,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and contr
 
 ## Author
 
-Guillaume Duquesnay - Analyzing multi-agent delegation patterns in Claude Code
+Guillaume Duquesnay
