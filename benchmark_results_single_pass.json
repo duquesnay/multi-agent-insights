@@ -1,8 +1,0 @@
-{
-  "multi_pass_avg_ms": 0.8863167982781306,
-  "single_pass_avg_ms": 0.8116748998872936,
-  "speedup": 1.0919603383093424,
-  "iterations": 10,
-  "sessions": 142,
-  "delegations": 1250
-}
