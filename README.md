@@ -1,6 +1,6 @@
 # Multi-Agent Insights
 
-Methodology for analyzing multi-agent delegation patterns in Claude Code. Combines git archaeology for timeline validation, parallel LLM and quantitative analysis, and temporal segmentation to understand agent performance and collaboration patterns.
+Methodology for analyzing multi-agent delegation patterns in Claude Code. Validates system evolution through git archaeology, archive and backups former Claude Code conversations, cross-checks LLM analyses with quantitative scripts, and produces insights about agent performance and collaboration patterns.
 
 ## What This Methodology Does
 
@@ -10,14 +10,14 @@ Analyzes your Claude Code multi-agent system to answer:
 - **What's blocking efficiency?** Routing quality, cascades, bottlenecks
 - **What improved over time?** System evolution, A/B configuration comparison
 
-**Approach**: Git archaeology for timeline discovery, parallel LLM + script analysis with cross-checking, temporal segmentation when system evolves.
+**Trying to be thorough**: Git archaeology for timeline validation, conversations retrieval and analysis (~/.claude/projects), parallel LLM + script analysis with cross-checking, temporal segmentation to avoid invalid aggregations (if you changed your agent system over time).
 
 ## Running an Assessment
 
 In any Claude Code conversation:
 
 ```
-/assess-agents
+/assess-agents (brings back everything)
 ```
 
 Default scope: All projects, last 30 days (Claude Code data retention limit).
@@ -26,7 +26,7 @@ Or specify parameters:
 
 ```
 /assess-agents
-- Project: my-game-ui
+- Project: my-game-project
 - Period: 2025-10-01 to 2025-10-03
 - Current config: game-design-specialist, game-graphics-specialist, ux-ergonomics-specialist
 ```
