@@ -12,6 +12,9 @@ Analyzes your Claude Code multi-agent system to answer:
 
 **Trying to be thorough**: Git archaeology for timeline validation, conversations retrieval and analysis (~/.claude/projects), parallel LLM + script analysis with cross-checking, temporal segmentation to avoid invalid aggregations (if you changed your agent system over time).
 
+## Note on Claude requirements
+Using the freshly released Sonnet 4.5 at the time of writing. No idea how this performs otherwise but Opus 4 must do as good with this process. 
+
 ## Running an Assessment
 
 In any Claude Code conversation:
@@ -39,25 +42,25 @@ Or specify parameters:
 
 ### What Happens
 
-**Phase 0 - Foundations** (30min, blocking):
+**Phase 0 - Foundations** (blocking):
 1. **Timeline discovery**: Determines when agents were added/modified
    - Asks if you version agent configurations (git or similar)
    - With versioning: Analyzes commit history for precise timeline
    - Without versioning: Infers from usage patterns (first/last appearance) + validates with you
 2. **Assumptions sync**: 15min validation with you (timeline, baselines, data gaps, uncertainties)
 
-**Phase 1 - Enriched Dataset** (15-30min):
+**Phase 1 - Enriched Dataset**:
 - Extracts session data with temporal classification
 - Identifies marathons (10+ delegations), failure patterns
 - Prepares structured data for parallel analysis
 
-**Phase 2 - Parallel Analysis** (1-2h):
+**Phase 2 - Parallel Analysis**:
 - **4 LLM agents** (semantic patterns): routing, failures, coordination, quality
 - **Python scripts** (quantitative): metrics, tokens, ROI
 - **Git validation**: Code quality cross-check
 - **Cross-checking**: Resolve contradictions
 
-**Phase 3 - Synthesis** (30min):
+**Phase 3 - Synthesis**:
 - Generates `observations-comparative-v[X].md`
 - 80% focus on current system state
 - Comparative insights (if baseline available)
