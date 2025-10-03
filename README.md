@@ -1,84 +1,93 @@
 # Multi-Agent Insights
 
-Analysis toolkit for multi-agent delegation patterns in Claude Code sessions. Provides automated pipeline and scripts for extracting, analyzing, and understanding agent usage patterns, performance metrics, and collaboration workflows.
+Rigorous methodology for analyzing multi-agent delegation patterns in Claude Code. Validates system evolution through git archaeology, cross-checks LLM analyses with quantitative scripts, and produces defensible insights about agent performance and collaboration patterns.
 
-## Quick Start
+## What This Methodology Does
 
-```bash
-# Install dependencies
-pip install -r requirements-test.txt
+Analyzes your Claude Code multi-agent system to answer:
+- **Which agents work well?** Adoption rates, success patterns, ROI
+- **How do agents collaborate?** Workflow patterns, handoffs, team dynamics
+- **What's blocking efficiency?** Routing quality, cascades, bottlenecks
+- **What improved over time?** System evolution, A/B configuration comparison
 
-# Run complete analysis pipeline
-python run_analysis_pipeline.py --all
+**Rigor**: Git archaeology for timeline validation, parallel LLM + script analysis with cross-checking, temporal segmentation to avoid invalid aggregations.
 
-# Run specific analysis
-python analysis_runner.py --metrics --marathons
+## Running an Assessment
 
-# Run tests
-./run_tests.sh all
-```
-
-## What It Does
-
-Analyzes Claude Code agent delegation data to answer:
-- **Which agents perform well?** Performance metrics, success rates, ROI
-- **What delegation patterns emerge?** Routing quality, collaboration workflows
-- **How efficient is the system?** Token usage, costs, throughput
-- **What improves over time?** Temporal segmentation, comparative analysis
-
-## Features
-
-- Automated 5-stage analysis pipeline
-- Temporal segmentation across system evolution
-- Performance metrics (tokens, costs, throughput)
-- Routing quality and collaboration patterns
-
-## Analyzing Your Multi-Agent System
-
-Use the `/assess-agents` command in Claude Code to analyze your agent delegation patterns:
+In any Claude Code conversation:
 
 ```
 /assess-agents project cold-chamber-ui
 ```
 
-This generates a comprehensive assessment including:
-- Agent adoption rates and usage patterns
-- Collaboration workflows between agents
-- Routing quality and efficiency metrics
-- Temporal analysis across system evolution
+Or provide full parameters:
 
-## Usage Examples
-
-### Full Pipeline
-```bash
-# Run complete workflow
-python run_analysis_pipeline.py --all
-
-# Dry-run to preview
-python run_analysis_pipeline.py --all --dry-run
-
-# Resume from specific stage
-python run_analysis_pipeline.py --from segmentation
+```
+/assess-agents
+- Project: cold-chamber-ui
+- Period: 2025-10-01 to 2025-10-03
+- Current config: game-design-specialist, game-graphics-specialist, ux-ergonomics-specialist
 ```
 
-### Individual Analyses
-```bash
-# List available analyses
-python analysis_runner.py --list
+### What Happens
 
-# Run specific analysis
-python analysis_runner.py --metrics
-```
+**Phase 0 - Foundations** (30min, blocking):
+1. **Git archaeology**: Scans `~/.claude-memories` to discover when agents were added/modified
+2. **Data backup**: Creates snapshot in `data/conversations/backup-YYYYMMDD/`
+3. **Assumptions sync**: 15min validation with you (timeline, baselines, data gaps)
+
+**Phase 1 - Enriched Dataset** (15-30min):
+- Extracts session data with temporal classification
+- Identifies marathons (10+ delegations), failure patterns
+- Prepares structured data for parallel analysis
+
+**Phase 2 - Parallel Analysis** (1-2h):
+- **4 LLM agents** (semantic patterns): routing, failures, coordination, quality
+- **Python scripts** (quantitative): metrics, tokens, ROI
+- **Git validation**: Code quality cross-check
+- **Cross-checking**: Resolve contradictions
+
+**Phase 3 - Synthesis** (30min):
+- Generates `observations-comparative-v[X].md`
+- 80% focus on current system state
+- Comparative insights (if baseline available)
+- User validation of findings
+
+**Output**: Comprehensive assessment document with agent adoption, collaboration patterns, efficiency metrics, and actionable insights.
+
+## Methodology Principles
+
+**VACE Framework**:
+- **Validate** foundations before analyzing (git + data + assumptions)
+- **Analyze** in parallel (LLM semantic + scripts quantitative)
+- **Cross-check** contradictions with primary data
+- **Evolve** with user corrections and versioning
+
+**Temporal Segmentation**: System evolves (agents added/removed). Never aggregate across configuration changes without segmentation.
+
+**No Assumptions**: Git archaeology discovers timeline each time. No cached knowledge about "when agents were added".
+
+## Example Output
+
+From `cold-chamber-ui` assessment (48h, 62 delegations):
+
+**Key Findings**:
+- 64.5% adoption of new game specialists (8x higher than typical)
+- Collaborative triad pattern emerged: UX ↔ Graphics ↔ Design
+- Workflow: Architecture → (UX+Graphics+Design parallel) → Implementation → QA
+
+**Insights**:
+- Multidisciplinary features benefit from multi-angle analysis (not "misrouting")
+- First true "team" pattern vs previous sequential silos
+- UI-focused project naturally favors graphics (35%) over mechanics (8%)
+
+See `analyses/cold-chamber-ui-assessment.md` for full example.
 
 ## Documentation
 
-- **[Pipeline Guide](docs/PIPELINE.md)** - Complete pipeline documentation
-- **[Contributing Guide](CONTRIBUTING.md)** - Development setup and standards
-
-## Requirements
-
-- Python 3.10+
-- Dependencies: `ijson`, `numpy` (see `requirements-test.txt`)
+- **[Methodology Reference](analyses/methodology/METHODOLOGIE-ANALYSE-RETROSPECTIVE.md)** - Complete VACE framework
+- **[Contributing Guide](CONTRIBUTING.md)** - Development setup for contributors
+- **[Pipeline Technical Guide](docs/PIPELINE.md)** - For developers extending analysis scripts
 
 ## License
 
