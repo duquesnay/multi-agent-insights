@@ -1,6 +1,6 @@
 # Multi-Agent Insights
 
-Rigorous methodology for analyzing multi-agent delegation patterns in Claude Code. Validates system evolution through git archaeology, cross-checks LLM analyses with quantitative scripts, and produces defensible insights about agent performance and collaboration patterns.
+Methodology for analyzing multi-agent delegation patterns in Claude Code. Combines git archaeology for timeline validation, parallel LLM and quantitative analysis, and temporal segmentation to understand agent performance and collaboration patterns.
 
 ## What This Methodology Does
 
@@ -10,31 +10,41 @@ Analyzes your Claude Code multi-agent system to answer:
 - **What's blocking efficiency?** Routing quality, cascades, bottlenecks
 - **What improved over time?** System evolution, A/B configuration comparison
 
-**Rigor**: Git archaeology for timeline validation, parallel LLM + script analysis with cross-checking, temporal segmentation to avoid invalid aggregations.
+**Approach**: Git archaeology for timeline discovery, parallel LLM + script analysis with cross-checking, temporal segmentation when system evolves.
 
 ## Running an Assessment
 
 In any Claude Code conversation:
 
 ```
-/assess-agents project cold-chamber-ui
+/assess-agents
 ```
 
-Or provide full parameters:
+Default scope: All projects, last 30 days (Claude Code data retention limit).
+
+Or specify parameters:
 
 ```
 /assess-agents
-- Project: cold-chamber-ui
+- Project: my-game-ui
 - Period: 2025-10-01 to 2025-10-03
 - Current config: game-design-specialist, game-graphics-specialist, ux-ergonomics-specialist
 ```
 
+**Data Retention Strategy**:
+- Claude Code keeps conversations for ~30 days only
+- Each analysis extracts and archives data locally in `data/conversations/`
+- Run monthly to build multi-month history over time
+- Enables long-term system evolution tracking
+
 ### What Happens
 
 **Phase 0 - Foundations** (30min, blocking):
-1. **Git archaeology**: Scans `~/.claude-memories` to discover when agents were added/modified
-2. **Data backup**: Creates snapshot in `data/conversations/backup-YYYYMMDD/`
-3. **Assumptions sync**: 15min validation with you (timeline, baselines, data gaps)
+1. **Timeline discovery**: Determines when agents were added/modified
+   - Asks if you version agent configurations (git or similar)
+   - With versioning: Analyzes commit history for precise timeline
+   - Without versioning: Infers from usage patterns (first/last appearance) + validates with you
+2. **Assumptions sync**: 15min validation with you (timeline, baselines, data gaps, uncertainties)
 
 **Phase 1 - Enriched Dataset** (15-30min):
 - Extracts session data with temporal classification
@@ -65,23 +75,23 @@ Or provide full parameters:
 
 **Temporal Segmentation**: System evolves (agents added/removed). Never aggregate across configuration changes without segmentation.
 
-**No Assumptions**: Git archaeology discovers timeline each time. No cached knowledge about "when agents were added".
+**No Assumptions**: Timeline discovered fresh each time (git or usage patterns). No cached knowledge about "when agents were added". Transparent about uncertainties.
 
 ## Example Output
 
-From `cold-chamber-ui` assessment (48h, 62 delegations):
+From a game UI project assessment (48h, 62 delegations):
 
 **Key Findings**:
-- 64.5% adoption of new game specialists (8x higher than typical)
-- Collaborative triad pattern emerged: UX ↔ Graphics ↔ Design
+- 64.5% adoption of newly added specialists (8x higher than typical)
+- Collaborative triad pattern: UX ↔ Graphics ↔ Design
 - Workflow: Architecture → (UX+Graphics+Design parallel) → Implementation → QA
 
 **Insights**:
-- Multidisciplinary features benefit from multi-angle analysis (not "misrouting")
-- First true "team" pattern vs previous sequential silos
-- UI-focused project naturally favors graphics (35%) over mechanics (8%)
+- Multidisciplinary features benefit from multi-angle analysis
+- First observed "team" pattern vs previous sequential workflows
+- UI-focused work naturally favored graphics (35%) over mechanics (8%)
 
-See `analyses/cold-chamber-ui-assessment.md` for full example.
+See `analyses/` directory for full assessment examples.
 
 ## Documentation
 
