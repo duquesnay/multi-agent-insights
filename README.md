@@ -43,16 +43,13 @@ Analyzes Claude Code agent delegation data to answer:
 
 ### Getting Started
 - **[Pipeline Guide](docs/PIPELINE.md)** - Complete pipeline documentation
-- **[Testing Guide](TESTING.md)** - How to run and write tests
+- **[Testing Guide](docs/TESTING.md)** - How to run and write tests
 
 ### Architecture
-- **[Domain Model](DOMAIN-MODEL.md)** - Typed entities and business logic
-- **[Strategy Pattern](STRATEGY-PATTERN-GUIDE.md)** - Adding custom analyses
+- **[Domain Model](docs/DOMAIN-MODEL.md)** - Typed entities and business logic
+- **[Strategy Pattern](docs/STRATEGY-PATTERN-GUIDE.md)** - Adding custom analyses
 - **[Schema Versioning](docs/SCHEMA-VERSIONING.md)** - Data format management
-
-### Methodology
-- **[Retrospective Methodology](METHODOLOGIE-ANALYSE-RETROSPECTIVE.md)** - Analysis framework (French)
-- **[Refactoring Report](REFACTORING-COMPLETE.md)** - 3.5/10 → 8.5/10 journey
+- **[Streaming Migration](docs/STREAMING_MIGRATION_GUIDE.md)** - Large dataset handling
 
 ## Project Structure
 
