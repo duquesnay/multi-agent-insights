@@ -5,9 +5,9 @@ Tests complete workflows from data loading through analysis.
 
 import pytest
 from pathlib import Path
-from common.data_repository import DataRepository
-from common.period_builder import get_periods
-from common.models import Session, Delegation
+from tools.common.data_repository import DataRepository
+from tools.common.period_builder import get_periods
+from tools.common.models import Session, Delegation
 
 
 @pytest.mark.integration

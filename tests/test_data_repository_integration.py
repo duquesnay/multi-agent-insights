@@ -8,7 +8,7 @@ Following CLAUDE.md guidelines:
 
 import pytest
 from pathlib import Path
-from common.data_repository import (
+from tools.common.data_repository import (
     DataRepository,
     load_delegations,
     load_sessions,
@@ -16,7 +16,7 @@ from common.data_repository import (
     stream_sessions,
     DataLoadError
 )
-from common.models import Delegation, Session
+from tools.common.models import Delegation, Session
 
 
 @pytest.mark.integration
