@@ -23,13 +23,24 @@ Analyze agent performance, delegation patterns, and system efficiency following 
 
 ```bash
 # The pipeline handles project filtering and custom date ranges
+# --all runs: backup → extraction → enrichment → segmentation → analysis → reporting
 python run_analysis_pipeline.py \
   --project "<project-name>" \
   --start-date YYYY-MM-DD \
   --end-date YYYY-MM-DD \
   --discover-periods \
   --all
+
+# Or skip backup if using existing data or live source
+python run_analysis_pipeline.py \
+  --project "<project-name>" \
+  --skip-backup \
+  --source-live \
+  --all
 ```
+
+**Note**: `--all` includes backup stage (archives conversations from ~/.claude/projects/).
+Use `--skip-backup` to skip archiving and work with existing data or live source.
 
 **Only create custom scripts if the pipeline cannot handle your use case.**
 

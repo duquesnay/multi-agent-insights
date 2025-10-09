@@ -271,8 +271,12 @@ python run_analysis_pipeline.py \
 ### Full Pipeline
 
 ```bash
-# Run complete analysis pipeline
+# Run complete analysis pipeline (includes backup stage)
+# Pipeline: backup → extraction → enrichment → segmentation → analysis → reporting
 python run_analysis_pipeline.py --all
+
+# Skip backup if using existing data or live source
+python run_analysis_pipeline.py --all --skip-backup --source-live
 
 # List available stages
 python run_analysis_pipeline.py --list-stages
@@ -283,9 +287,11 @@ python run_analysis_pipeline.py --stage segmentation --stage analysis
 # Resume from specific stage
 python run_analysis_pipeline.py --from analysis
 
-# Dry-run (preview without executing)
+# Dry-run (preview without executing - shows planned stages upfront)
 python run_analysis_pipeline.py --all --dry-run
 ```
+
+**Note**: `--all` includes the backup stage which archives conversations from `~/.claude/projects/` to `data/conversations/`. Use `--skip-backup` to work with existing data or `--source-live` to read directly from live source.
 
 ### Individual Analyses
 
