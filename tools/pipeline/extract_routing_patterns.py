@@ -9,44 +9,56 @@ from datetime import datetime
 from collections import defaultdict, Counter
 from typing import Dict, List, Tuple
 
-from tools.common.config import PERIODS, ENRICHED_SESSIONS_FILE, ROUTING_PATTERNS_FILE
+from tools.common.config import get_runtime_config, ENRICHED_SESSIONS_FILE, ROUTING_PATTERNS_FILE
 
 def parse_timestamp(ts_str: str) -> datetime:
     """Parse ISO timestamp."""
     return datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
 
-def get_period(timestamp: str) -> str:
-    """Determine which period a timestamp belongs to."""
+def get_period(timestamp: str, periods_dict: Dict[str, Dict]) -> str:
+    """Determine which period a timestamp belongs to.
+
+    Args:
+        timestamp: ISO timestamp string
+        periods_dict: Period definitions from RuntimeConfig
+
+    Returns:
+        Period ID or None if outside all periods
+    """
     dt = parse_timestamp(timestamp)
     date_only = dt.date()
-    
-    for period_id, (start, end, _) in PERIODS.items():
-        start_date = datetime.fromisoformat(start).date()
-        end_date = datetime.fromisoformat(end).date()
+
+    for period_id, period_meta in periods_dict.items():
+        start_date = datetime.fromisoformat(period_meta['start']).date()
+        end_date = datetime.fromisoformat(period_meta['end']).date()
         if start_date <= date_only <= end_date:
             return period_id
     return None
 
 def extract_routing_patterns(data_path: str):
     """Extract routing patterns by period."""
-    
+
     with open(data_path, 'r') as f:
         data = json.load(f)
-    
+
+    # Get periods from runtime config
+    runtime_config = get_runtime_config()
+    periods_dict = runtime_config.get_periods()
+
     # Structure to hold routing info by period
     routing_by_period = {
-        period: {
+        period_id: {
             'delegations': [],  # All delegations with full context
             'transitions': [],  # Agent→agent transitions
             'agent_calls': Counter(),  # How often each agent is called
             'agent_tasks': defaultdict(list),  # Tasks handled by each agent
         }
-        for period in PERIODS.keys()
+        for period_id in periods_dict.keys()
     }
-    
+
     # Process each session
     for session in data['sessions']:
-        session_period = get_period(session['first_timestamp'])
+        session_period = get_period(session['first_timestamp'], periods_dict)
         if not session_period:
             continue
         
@@ -123,45 +135,50 @@ def analyze_agent_usage(routing_data: Dict) -> Dict:
 def main():
     print("Extracting routing patterns...")
     routing_data = extract_routing_patterns(str(ENRICHED_SESSIONS_FILE))
-    
+
     print("Analyzing agent usage...")
     analysis = analyze_agent_usage(routing_data)
-    
+
+    # Get periods from runtime config
+    runtime_config = get_runtime_config()
+    periods_dict = runtime_config.get_periods()
+
     # Output detailed routing data
     output = {
         'extraction_date': datetime.now().isoformat(),
         'periods': {
-            period: {
-                'name': PERIODS[period][2],
-                'date_range': f"{PERIODS[period][0]} to {PERIODS[period][1]}",
-                'analysis': analysis[period],
-                'full_delegations': routing_data[period]['delegations']
+            period_id: {
+                'name': period_meta['name'],
+                'date_range': f"{period_meta['start']} to {period_meta['end']}",
+                'analysis': analysis[period_id],
+                'full_delegations': routing_data[period_id]['delegations']
             }
-            for period in PERIODS.keys()
+            for period_id, period_meta in periods_dict.items()
         }
     }
-    
+
     with open(ROUTING_PATTERNS_FILE, 'w') as f:
         json.dump(output, f, indent=2)
 
     print(f"\nRouting patterns extracted to: {ROUTING_PATTERNS_FILE}")
-    
+
     # Print summary
     print("\n=== ROUTING SUMMARY BY PERIOD ===\n")
-    for period in ['P2', 'P3', 'P4']:
-        period_name = PERIODS[period][2]
-        period_analysis = analysis[period]
-        
-        print(f"{period} - {period_name}")
-        print(f"  Total delegations: {period_analysis['total_delegations']}")
-        print(f"  Top 5 agents:")
-        for agent, count in period_analysis['top_agents']:
-            pct = (count / period_analysis['total_delegations']) * 100
-            print(f"    {agent}: {count} ({pct:.1f}%)")
-        print(f"  Top transitions:")
-        for (from_agent, to_agent), count in period_analysis['transition_patterns'][:3]:
-            print(f"    {from_agent} → {to_agent}: {count}")
-        print()
+    for period_id in sorted(periods_dict.keys()):
+        period_meta = periods_dict[period_id]
+        period_analysis = analysis.get(period_id, {})
+
+        if period_analysis:
+            print(f"{period_id} - {period_meta['name']}")
+            print(f"  Total delegations: {period_analysis.get('total_delegations', 0)}")
+            print(f"  Top 5 agents:")
+            for agent, count in period_analysis.get('top_agents', []):
+                pct = (count / period_analysis['total_delegations']) * 100 if period_analysis.get('total_delegations') else 0
+                print(f"    {agent}: {count} ({pct:.1f}%)")
+            print(f"  Top transitions:")
+            for (from_agent, to_agent), count in period_analysis.get('transition_patterns', [])[:3]:
+                print(f"    {from_agent} → {to_agent}: {count}")
+            print()
 
 if __name__ == '__main__':
     main()

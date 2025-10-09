@@ -50,66 +50,84 @@ HISTORICAL_DIR = DATA_DIR / "historical"
 # TEMPORAL PERIOD DEFINITIONS
 # =============================================================================
 
-# Default analysis start: Multi-agent system launch in Claude Code
-DEFAULT_ANALYSIS_START = "2025-08-04"  # When multi-agent delegation became available
+class ConfigurationError(Exception):
+    """Raised when configuration is invalid or incomplete."""
+    pass
 
-# Historical period boundaries (for reference/comparison only)
-P1_START = "2025-08-04"
-P1_END = "2025-09-02"
-P2_START = "2025-09-03"
-P2_END = "2025-09-11"
-P3_START = "2025-09-12"
-P3_END = "2025-09-20"
-P4_START = "2025-09-21"
-P4_END = "2025-09-30"
+# Reference: Multi-agent system launch in Claude Code (for documentation only)
+# This is NOT used as a fallback - each analysis must define its own time period
+DEFAULT_ANALYSIS_START = "2025-08-04"  # Historical reference only
 
-# Period metadata
-PERIOD_DEFINITIONS: Dict[str, Dict] = {
-    "P1": {
-        "name": "Launch + Vacances",
-        "start": P1_START,
-        "end": P1_END,
-        "changes": ["Initial launch", "Vacation period"],
-        "description": "Initial system launch and vacation period"
-    },
-    "P2": {
-        "name": "Conception Added",
-        "start": P2_START,
-        "end": P2_END,
-        "changes": ["+solution-architect", "+project-framer"],
-        "description": "Addition of planning and design capabilities"
-    },
-    "P3": {
-        "name": "Délégation Obligatoire",
-        "start": P3_START,
-        "end": P3_END,
-        "changes": [
-            "Mandatory delegation policy",
-            "+content-developer (Sept 15)",
-            "+refactoring-specialist (Sept 20)"
-        ],
-        "description": "Mandatory delegation with content and refactoring specialists"
-    },
-    "P4": {
-        "name": "Post-Restructuration",
-        "start": P4_START,
-        "end": P4_END,
-        "changes": [
-            "developer → senior-developer + junior-developer (Sept 21 16h24)",
-            "Scope creep safeguards (Sept 21-22)",
-            "+parallel-worktree-framework (Sept 22)"
-        ],
-        "description": "Major restructuring with senior/junior split and safeguards"
-    }
-}
+# =============================================================================
+# DYNAMIC PERIOD CREATION
+# =============================================================================
 
-# Period tuples for compatibility with existing code
-PERIODS: Dict[str, Tuple[str, str, str]] = {
-    "P1": (P1_START, P1_END, "Launch + Vacances"),
-    "P2": (P2_START, P2_END, "Conception Added"),
-    "P3": (P3_START, P3_END, "Mandatory Delegation"),
-    "P4": (P4_START, P4_END, "Post-Restructuration")
-}
+def _get_fallback_period_from_data() -> Dict[str, Dict]:
+    """Create period definition from actual conversation data timestamps.
+
+    This is the last-resort fallback when no period configuration is provided.
+    Analyzes existing session data to determine the date range.
+
+    Returns:
+        Dictionary with single period covering the data's date range
+
+    Raises:
+        ConfigurationError: If no data exists or cannot create period
+    """
+    import json
+
+    if not SESSIONS_DATA_FILE.exists():
+        raise ConfigurationError(
+            "No period definitions available and no session data found.\n"
+            "You must either:\n"
+            "  1. Use --discover-periods for git archaeology\n"
+            "  2. Provide --start-date and --end-date\n"
+            "  3. Run extraction first to generate session data"
+        )
+
+    try:
+        with open(SESSIONS_DATA_FILE, 'r') as f:
+            data = json.load(f)
+
+        sessions = data.get('sessions', [])
+        if not sessions:
+            raise ConfigurationError(
+                "Session data file exists but contains no sessions.\n"
+                "Run extraction first or use --discover-periods / --start-date --end-date"
+            )
+
+        # Extract all timestamps from delegations
+        all_dates = []
+        for session in sessions:
+            for delegation in session.get('delegations', []):
+                if 'timestamp' in delegation:
+                    # Extract date part (YYYY-MM-DD)
+                    date_part = delegation['timestamp'].split('T')[0]
+                    all_dates.append(date_part)
+
+        if not all_dates:
+            raise ConfigurationError(
+                "No delegation timestamps found in session data.\n"
+                "Data may be corrupted or incomplete."
+            )
+
+        min_date = min(all_dates)
+        max_date = max(all_dates)
+
+        return {
+            "P1": {
+                "name": "Analysis Period",
+                "start": min_date,
+                "end": max_date,
+                "changes": ["Data-derived period from existing sessions"],
+                "description": f"Auto-generated from session data ({min_date} to {max_date})"
+            }
+        }
+
+    except json.JSONDecodeError as e:
+        raise ConfigurationError(f"Failed to parse session data: {e}")
+    except Exception as e:
+        raise ConfigurationError(f"Error creating fallback period: {e}")
 
 # =============================================================================
 # THRESHOLDS AND MAGIC NUMBERS
@@ -185,7 +203,17 @@ class RuntimeConfig:
     source_live: bool = False  # Read from ~/.claude/projects/ instead of backup
 
     def get_periods(self) -> Dict[str, Dict]:
-        """Get period definitions (runtime or default)."""
+        """Get period definitions with intelligent fallback chain.
+
+        Priority (highest to lowest):
+        1. Runtime-provided periods (explicit configuration)
+        2. Git archaeology (--discover-periods flag)
+        3. Custom date range (--start-date and --end-date)
+        4. Data-derived period (from existing session timestamps)
+
+        Raises:
+            ConfigurationError: If no valid period source available
+        """
         if self.periods:
             return self.periods
 
@@ -204,8 +232,8 @@ class RuntimeConfig:
                 }
             }
 
-        # Default: use hardcoded periods
-        return PERIOD_DEFINITIONS
+        # Last resort: derive period from existing data
+        return _get_fallback_period_from_data()
 
     def matches_date_range(self, date_str: str) -> bool:
         """Check if a date falls within the configured range.
@@ -286,32 +314,31 @@ def clear_runtime_config():
 # =============================================================================
 
 def get_dynamic_periods(use_git: bool = False, use_cache: bool = True) -> Dict[str, Dict]:
-    """Get period definitions dynamically or from static configuration.
-
-    This function provides a bridge between static and dynamic period discovery.
-    By default, it uses the hardcoded PERIOD_DEFINITIONS for backward compatibility.
-    When use_git=True, it attempts git archaeology to discover periods.
+    """Get period definitions dynamically from git or data.
 
     Args:
         use_git: If True, discover periods from git history
         use_cache: If True and use_git=True, use cached periods if available
 
     Returns:
-        Dictionary of period definitions in PERIOD_DEFINITIONS format
+        Dictionary of period definitions
+
+    Raises:
+        ConfigurationError: If git discovery fails and no data available
 
     Examples:
-        # Use hardcoded periods (backward compatible)
-        periods = get_dynamic_periods()
-
-        # Discover from git (methodology-aligned)
+        # Discover from git (recommended)
         periods = get_dynamic_periods(use_git=True)
 
         # Force fresh git discovery
         periods = get_dynamic_periods(use_git=True, use_cache=False)
+
+        # Data-derived fallback
+        periods = get_dynamic_periods(use_git=False)
     """
     if not use_git:
-        # Backward compatible: return hardcoded periods
-        return PERIOD_DEFINITIONS
+        # Fallback: derive from existing data
+        return _get_fallback_period_from_data()
 
     # Import here to avoid circular dependency
     try:
@@ -319,34 +346,8 @@ def get_dynamic_periods(use_git: bool = False, use_cache: bool = True) -> Dict[s
         return get_periods(use_git=True, use_cache=use_cache)
     except ImportError as e:
         import logging
-        logging.warning(f"Failed to import period_builder: {e}. Using fallback periods.")
-        return PERIOD_DEFINITIONS
-
-
-def get_period_for_date(date_str: str) -> str | None:
-    """Classify a date string into its period (P1, P2, P3, P4).
-
-    Args:
-        date_str: ISO format date string (e.g., "2025-09-15" or full timestamp)
-
-    Returns:
-        Period ID ("P1", "P2", "P3", "P4") or None if outside all periods
-    """
-    from datetime import datetime
-
-    # Extract date part if full timestamp
-    if 'T' in date_str:
-        date_str = date_str.split('T')[0]
-
-    date_obj = datetime.fromisoformat(date_str).date()
-
-    for period_id, (start, end, _) in PERIODS.items():
-        start_date = datetime.fromisoformat(start).date()
-        end_date = datetime.fromisoformat(end).date()
-        if start_date <= date_obj <= end_date:
-            return period_id
-
-    return None
+        logging.warning(f"Failed to import period_builder: {e}. Using data-derived fallback.")
+        return _get_fallback_period_from_data()
 
 
 def ensure_data_dirs():
@@ -377,13 +378,8 @@ def validate_config():
     if not SESSIONS_DATA_FILE.exists():
         warnings.append(f"Missing data file: {SESSIONS_DATA_FILE}")
 
-    # Check period date ordering
-    from datetime import datetime
-    for period_id, (start, end, _) in PERIODS.items():
-        start_dt = datetime.fromisoformat(start)
-        end_dt = datetime.fromisoformat(end)
-        if start_dt >= end_dt:
-            warnings.append(f"Period {period_id}: start date >= end date")
+    # Period validation happens at runtime via RuntimeConfig.get_periods()
+    # which will raise ConfigurationError if periods cannot be determined
 
     return warnings
 
@@ -393,9 +389,15 @@ if __name__ == "__main__":
     print("=== Delegation Retrospective Configuration ===\n")
     print(f"Project Root: {PROJECT_ROOT}")
     print(f"Data Directory: {DATA_DIR}")
+
     print(f"\nPeriod Definitions:")
-    for period_id, meta in PERIOD_DEFINITIONS.items():
-        print(f"  {period_id}: {meta['start']} to {meta['end']} - {meta['name']}")
+    try:
+        config = get_runtime_config()
+        periods = config.get_periods()
+        for period_id, meta in periods.items():
+            print(f"  {period_id}: {meta['start']} to {meta['end']} - {meta['name']}")
+    except ConfigurationError as e:
+        print(f"  ⚠️  No periods configured: {e}")
 
     print(f"\nThresholds:")
     print(f"  Marathon: {MARATHON_THRESHOLD} delegations")

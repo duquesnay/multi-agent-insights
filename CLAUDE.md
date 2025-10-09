@@ -12,7 +12,7 @@ Comprendre l'**évolution du système de délégation multi-agents** pendant sep
 
 **Before writing ANY custom extraction/analysis code:**
 
-1. **Check existing tools first**: `python -m tools.pipeline.run_analysis_pipeline --help`
+1. **Check existing tools first**: `python run_analysis_pipeline.py --help`
 2. **Try pipeline with filters**: Use `--project`, `--start-date`, `--end-date`
 3. **Only if pipeline cannot handle**: Then consider custom scripts
 
@@ -60,7 +60,7 @@ Need data?
 
 **✅ RIGHT WAY** (Recent data from specific project):
 ```bash
-python -m tools.pipeline.run_analysis_pipeline \
+python run_analysis_pipeline.py \
   --project "cold-chamber" \
   --start-date 2025-10-08 \
   --end-date 2025-10-08 \

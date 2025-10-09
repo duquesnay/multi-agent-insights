@@ -5,8 +5,7 @@ from datetime import datetime
 from collections import Counter
 
 from tools.common.config import (
-    P2_START, P2_END, P3_START, P3_END, P4_START, P4_END,
-    PERIOD_DEFINITIONS, SESSIONS_DATA_FILE, TEMPORAL_SEGMENTATION_FILE,
+    SESSIONS_DATA_FILE, TEMPORAL_SEGMENTATION_FILE,
     MARATHON_THRESHOLD, get_runtime_config
 )
 
