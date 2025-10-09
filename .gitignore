@@ -54,6 +54,8 @@ roi_*.md
 CODE_QUALITY*.md
 PIPELINE_QUICK_REF.md
 START-NEW-ANALYSIS.md
+MIGRATION*.md
+SCALING*.md
 antipatterns*.md
 coordination*.md
 failure*.md
