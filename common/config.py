@@ -181,6 +181,9 @@ class RuntimeConfig:
     # Discovery options
     discover_periods: bool = False  # Use git archaeology to find periods
 
+    # Source configuration
+    source_live: bool = False  # Read from ~/.claude/projects/ instead of backup
+
     def get_periods(self) -> Dict[str, Dict]:
         """Get period definitions (runtime or default)."""
         if self.periods:

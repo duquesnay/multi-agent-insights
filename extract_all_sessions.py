@@ -30,9 +30,24 @@ def extract_all_sessions():
     """Scan ALL project directories for session files.
 
     Filters by runtime config (project path and date range if specified).
+
+    Source: Reads from data/conversations/ (backup) by default,
+    or ~/.claude/projects/ (live) if source_live=True.
     """
-    projects_dir = Path.home() / ".claude/projects"
     runtime_config = get_runtime_config()
+
+    # Determine source directory
+    if runtime_config.source_live:
+        projects_dir = Path.home() / ".claude/projects"
+        print(f"Reading from LIVE source: {projects_dir}", flush=True)
+    else:
+        projects_dir = Path(__file__).parent / "data" / "conversations"
+        print(f"Reading from BACKUP: {projects_dir}", flush=True)
+        if not projects_dir.exists():
+            print(f"⚠️  Backup not found. Run with --source-live or backup first.", flush=True)
+            projects_dir = Path.home() / ".claude/projects"
+            print(f"   Falling back to LIVE: {projects_dir}", flush=True)
+
     all_sessions = {}
 
     for project_dir in projects_dir.iterdir():

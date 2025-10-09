@@ -52,6 +52,7 @@ from common.config import (
 
 class PipelineStage(Enum):
     """Pipeline stages in execution order."""
+    BACKUP = "backup"
     EXTRACTION = "extraction"
     ENRICHMENT = "enrichment"
     SEGMENTATION = "segmentation"
@@ -121,6 +122,22 @@ class StageDefinition:
 
 # Pipeline stage definitions
 STAGE_DEFINITIONS: Dict[PipelineStage, StageDefinition] = {
+    PipelineStage.BACKUP: StageDefinition(
+        stage=PipelineStage.BACKUP,
+        name="Conversation Backup",
+        description="Archive raw .jsonl conversations from ~/.claude/projects/",
+        scripts=[
+            "scripts/copy_conversations.py",
+        ],
+        produces=[
+            DATA_DIR / "conversations" / ".backup_complete",  # Marker file
+        ],
+        requires=[
+            # External: ~/.claude/projects/ (checked separately)
+        ],
+        depends_on=[]
+    ),
+
     PipelineStage.EXTRACTION: StageDefinition(
         stage=PipelineStage.EXTRACTION,
         name="Data Extraction",
@@ -375,6 +392,8 @@ class PipelineOrchestrator:
                     env['ANALYSIS_END_DATE'] = runtime_config.end_date
                 if runtime_config.discover_periods:
                     env['ANALYSIS_DISCOVER_PERIODS'] = 'true'
+                if runtime_config.source_live:
+                    env['ANALYSIS_SOURCE_LIVE'] = 'true'
 
                 result = subprocess.run(
                     ["python", str(script_path)] + args,
@@ -571,17 +590,30 @@ Examples:
         help='Use git archaeology to discover period definitions'
     )
 
+    # Backup and source configuration
+    parser.add_argument(
+        '--skip-backup',
+        action='store_true',
+        help='Skip conversation backup stage (use existing backup or live source)'
+    )
+    parser.add_argument(
+        '--source-live',
+        action='store_true',
+        help='Read conversations from ~/.claude/projects/ instead of backup archive'
+    )
+
     args = parser.parse_args()
 
     # Set runtime configuration from CLI arguments
-    if args.project or args.start_date or args.end_date or args.discover_periods:
+    if args.project or args.start_date or args.end_date or args.discover_periods or args.source_live:
         from common.config import RuntimeConfig, set_runtime_config
 
         config = RuntimeConfig(
             project_filter=args.project,
             start_date=args.start_date,
             end_date=args.end_date,
-            discover_periods=args.discover_periods
+            discover_periods=args.discover_periods,
+            source_live=args.source_live
         )
         set_runtime_config(config)
 
@@ -594,6 +626,10 @@ Examples:
                 print(f"  Date range: {args.start_date or 'any'} to {args.end_date or 'any'}")
             if args.discover_periods:
                 print(f"  Period discovery: git archaeology")
+            if args.source_live:
+                print(f"  Source: ~/.claude/projects/ (live)")
+            else:
+                print(f"  Source: data/conversations/ (backup)")
             print()
 
     # List stages
@@ -611,6 +647,9 @@ Examples:
     stages_to_run = []
     if args.all:
         stages_to_run = list(PipelineStage)
+        # Remove BACKUP stage if --skip-backup
+        if args.skip_backup:
+            stages_to_run = [s for s in stages_to_run if s != PipelineStage.BACKUP]
     elif args.from_stage:
         # Run from specified stage onwards
         start_stage = PipelineStage(args.from_stage)
