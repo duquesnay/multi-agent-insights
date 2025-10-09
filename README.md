@@ -17,22 +17,46 @@ Using the freshly released Sonnet 4.5 at the time of writing. No idea how this p
 
 ## Running an Assessment
 
-In any Claude Code conversation:
-
-```
-/assess-agents (brings back everything)
-```
-
-Default scope: All projects, last 30 days (Claude Code data retention limit).
-
-Or specify parameters:
+### Option 1: Via Slash Command (In Claude Code Conversation)
 
 ```
 /assess-agents
-- Project: my-game-project
-- Period: 2025-10-01 to 2025-10-03
-- Current config: game-design-specialist, game-graphics-specialist, ux-ergonomics-specialist
 ```
+
+**Default scope**: All projects since August 4, 2025 (when multi-agent delegation launched in Claude Code).
+
+**Custom scope** - specify parameters:
+
+```
+/assess-agents obsidian-local-rest-api
+```
+
+The command will prompt for period and other details, or analyze with discovered periods.
+
+### Option 2: Direct Pipeline (For Advanced Use)
+
+```bash
+# Default: All projects since August 4, 2025 (multi-agent launch)
+python run_analysis_pipeline.py --all
+
+# Single project analysis
+python run_analysis_pipeline.py --all \
+  --project "obsidian-local-rest-api" \
+  --start-date "2025-09-26" \
+  --end-date "2025-10-06"
+
+# Auto-discover periods from git
+python run_analysis_pipeline.py --all --discover-periods
+
+# Specific stages only
+python run_analysis_pipeline.py --stage extraction --stage analysis
+```
+
+**Scope Configuration**:
+- **Project filtering**: Analyze specific projects or all projects
+- **Date range**: Custom start/end dates or defaults (since August 2025, ongoing)
+- **Period discovery**: Auto-detect configuration changes from git
+- **Default behavior**: All projects since August 4, 2025 (multi-agent launch)
 
 **Data Retention Strategy**:
 - Claude Code keeps conversations for ~30 days only
@@ -104,7 +128,7 @@ See `analyses/` directory for full assessment examples.
 
 ## License
 
-[Specify license]
+MIT License - see [LICENSE](LICENSE) file for details
 
 ## Author
 
