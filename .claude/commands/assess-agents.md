@@ -44,6 +44,28 @@ Use `--skip-backup` to skip archiving and work with existing data or live source
 
 **Only create custom scripts if the pipeline cannot handle your use case.**
 
+### Phase 0.5: Domain Understanding (Before Pipeline)
+
+**CRITICAL**: Understand WHAT was built before counting HOW agents worked.
+
+```bash
+# 1. Git archaeology - what features were built?
+cd <project-directory>
+git log --oneline --since="<start-date>" --until="<end-date>" | head -20
+
+# 2. Identify project type from git log + README
+# Look for: UI components? API endpoints? Infrastructure? Game mechanics?
+
+# 3. Sample actual delegation contexts (AFTER pipeline extraction)
+# Open data/enriched_sessions_data.json
+# Read 5-10 delegation contexts to understand:
+#   - What problems were being solved?
+#   - Which agents handled what domain work?
+#   - How did visual/API/infra work flow through agents?
+```
+
+**Anti-pattern**: Running full pipeline → generating tables → never understanding the work context.
+
 ---
 
 ## Analysis Process
@@ -51,9 +73,14 @@ Use `--skip-backup` to skip archiving and work with existing data or live source
 Following **METHODOLOGIE-ANALYSE-RETROSPECTIVE.md**:
 
 1. **Phase 0 (BLOCKING)**: Git archaeology + Data inventory + Assumptions sync
-2. **Phase 1**: Enriched dataset extraction + classification (via pipeline)
-3. **Phase 2**: 4 parallel LLM agents + Python scripts + Cross-check
-4. **Phase 3**: Current system assessment synthesis (80% focus) + User validation
+2. **Phase 0.5 (BLOCKING)**: Project domain understanding
+   - **Git log**: What was actually built? (features, not just "commits")
+   - **Project type**: UI? API? Infrastructure? Game? DevOps?
+   - **Sample 5-10 delegations**: Read actual contexts from enriched_sessions_data.json
+   - **Why**: Numbers without domain context = meaningless aggregates
+3. **Phase 1**: Enriched dataset extraction + classification (via pipeline)
+4. **Phase 2**: 4 parallel LLM agents + Python scripts + Cross-check
+5. **Phase 3**: Current system assessment synthesis (80% focus) + User validation
 
 **Output**: `observations-comparative-v[X].md` (agents/patterns/efficiency assessment)
 
