@@ -12,7 +12,7 @@ Comprendre l'**évolution du système de délégation multi-agents** pendant sep
 
 **Before writing ANY custom extraction/analysis code:**
 
-1. **Check existing tools first**: `python run_analysis_pipeline.py --help`
+1. **Check existing tools first**: `python -m tools.pipeline.run_analysis_pipeline --help`
 2. **Try pipeline with filters**: Use `--project`, `--start-date`, `--end-date`
 3. **Only if pipeline cannot handle**: Then consider custom scripts
 
@@ -60,7 +60,7 @@ Need data?
 
 **✅ RIGHT WAY** (Recent data from specific project):
 ```bash
-python run_analysis_pipeline.py \
+python -m tools.pipeline.run_analysis_pipeline \
   --project "cold-chamber" \
   --start-date 2025-10-08 \
   --end-date 2025-10-08 \
@@ -276,11 +276,11 @@ Avertissement Méthodologique
 
 **Before writing custom extraction/analysis code**: Check if the existing pipeline handles your use case.
 
-The `run_analysis_pipeline.py` supports runtime configuration for different projects and time periods:
+The pipeline supports runtime configuration for different projects and time periods:
 
 ```bash
 # Project-specific analysis with custom date range
-python run_analysis_pipeline.py \
+python -m tools.pipeline.run_analysis_pipeline \
   --project "project-name" \
   --start-date 2025-10-01 \
   --end-date 2025-10-07 \
@@ -296,22 +296,22 @@ python run_analysis_pipeline.py \
 ```bash
 # Run complete analysis pipeline (includes backup stage)
 # Pipeline: backup → extraction → enrichment → segmentation → analysis → reporting
-python run_analysis_pipeline.py --all
+python -m tools.pipeline.run_analysis_pipeline --all
 
 # Skip backup if using existing data or live source
-python run_analysis_pipeline.py --all --skip-backup --source-live
+python -m tools.pipeline.run_analysis_pipeline --all --skip-backup --source-live
 
 # List available stages
-python run_analysis_pipeline.py --list-stages
+python -m tools.pipeline.run_analysis_pipeline --list-stages
 
 # Run specific stages
-python run_analysis_pipeline.py --stage segmentation --stage analysis
+python -m tools.pipeline.run_analysis_pipeline --stage segmentation --stage analysis
 
 # Resume from specific stage
-python run_analysis_pipeline.py --from analysis
+python -m tools.pipeline.run_analysis_pipeline --from analysis
 
 # Dry-run (preview without executing - shows planned stages upfront)
-python run_analysis_pipeline.py --all --dry-run
+python -m tools.pipeline.run_analysis_pipeline --all --dry-run
 ```
 
 **Note**: `--all` includes the backup stage which archives conversations from `~/.claude/projects/` to `data/conversations/`. Use `--skip-backup` to work with existing data or `--source-live` to read directly from live source.
@@ -320,14 +320,14 @@ python run_analysis_pipeline.py --all --dry-run
 
 ```bash
 # List available analyses
-python analysis_runner.py --list
+python -m tools.pipeline.analysis_runner --list
 
 # Run specific analysis
-python analysis_runner.py --metrics
-python analysis_runner.py --marathons
+python -m tools.pipeline.analysis_runner --metrics
+python -m tools.pipeline.analysis_runner --marathons
 
 # Run all analyses
-python analysis_runner.py --all
+python -m tools.pipeline.analysis_runner --all
 ```
 
 ### Testing

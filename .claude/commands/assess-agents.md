@@ -24,7 +24,7 @@ Analyze agent performance, delegation patterns, and system efficiency following 
 ```bash
 # The pipeline handles project filtering and custom date ranges
 # --all runs: backup → extraction → enrichment → segmentation → analysis → reporting
-python run_analysis_pipeline.py \
+python -m tools.pipeline.run_analysis_pipeline \
   --project "<project-name>" \
   --start-date YYYY-MM-DD \
   --end-date YYYY-MM-DD \
@@ -32,7 +32,7 @@ python run_analysis_pipeline.py \
   --all
 
 # Or skip backup if using existing data or live source
-python run_analysis_pipeline.py \
+python -m tools.pipeline.run_analysis_pipeline \
   --project "<project-name>" \
   --skip-backup \
   --source-live \
