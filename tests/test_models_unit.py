@@ -9,7 +9,7 @@ Following CLAUDE.md guidelines:
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from common.models import (
+from tools.common.models import (
     TokenMetrics,
     Delegation,
     Session,

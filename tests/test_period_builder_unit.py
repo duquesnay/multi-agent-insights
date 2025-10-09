@@ -5,7 +5,7 @@ Tests period discovery, filtering, and naming without git dependency.
 
 import pytest
 from pathlib import Path
-from common.period_builder import (
+from tools.common.period_builder import (
     PeriodBuilder,
     PeriodChange,
     PeriodDiscoveryError,
