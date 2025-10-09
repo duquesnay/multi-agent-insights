@@ -60,7 +60,7 @@ Need data?
 
 **✅ RIGHT WAY** (Recent data from specific project):
 ```bash
-python run_analysis_pipeline.py \
+PYTHONPATH=. python tools/pipeline/run_analysis_pipeline.py \
   --project "cold-chamber" \
   --start-date 2025-10-08 \
   --end-date 2025-10-08 \
@@ -293,25 +293,27 @@ python -m tools.pipeline.run_analysis_pipeline \
 
 ### Full Pipeline
 
+**CRITICAL**: Must run from project root with `PYTHONPATH=.`
+
 ```bash
 # Run complete analysis pipeline (includes backup stage)
 # Pipeline: backup → extraction → enrichment → segmentation → analysis → reporting
-python -m tools.pipeline.run_analysis_pipeline --all
+PYTHONPATH=. python tools/pipeline/run_analysis_pipeline.py --all
 
 # Skip backup if using existing data or live source
-python -m tools.pipeline.run_analysis_pipeline --all --skip-backup --source-live
+PYTHONPATH=. python tools/pipeline/run_analysis_pipeline.py --all --skip-backup --source-live
 
 # List available stages
-python -m tools.pipeline.run_analysis_pipeline --list-stages
+PYTHONPATH=. python tools/pipeline/run_analysis_pipeline.py --list-stages
 
 # Run specific stages
-python -m tools.pipeline.run_analysis_pipeline --stage segmentation --stage analysis
+PYTHONPATH=. python tools/pipeline/run_analysis_pipeline.py --stage segmentation --stage analysis
 
 # Resume from specific stage
-python -m tools.pipeline.run_analysis_pipeline --from analysis
+PYTHONPATH=. python tools/pipeline/run_analysis_pipeline.py --from analysis
 
 # Dry-run (preview without executing - shows planned stages upfront)
-python -m tools.pipeline.run_analysis_pipeline --all --dry-run
+PYTHONPATH=. python tools/pipeline/run_analysis_pipeline.py --all --dry-run
 ```
 
 **Note**: `--all` includes the backup stage which archives conversations from `~/.claude/projects/` to `data/conversations/`. Use `--skip-backup` to work with existing data or `--source-live` to read directly from live source.
