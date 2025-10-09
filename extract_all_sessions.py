@@ -9,7 +9,7 @@ from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 
-from common.config import AGENT_CALLS_CSV, SESSIONS_DATA_FILE, PROJECTS_DIR
+from common.config import AGENT_CALLS_CSV, SESSIONS_DATA_FILE, PROJECTS_DIR, get_runtime_config
 
 def load_known_delegations():
     """Load the 1246 delegations we know about."""
@@ -27,14 +27,18 @@ def load_known_delegations():
     return delegations
 
 def extract_all_sessions():
-    """Scan ALL project directories for session files."""
+    """Scan ALL project directories for session files.
+
+    Filters by runtime config (project path and date range if specified).
+    """
     projects_dir = Path.home() / ".claude/projects"
+    runtime_config = get_runtime_config()
     all_sessions = {}
-    
+
     for project_dir in projects_dir.iterdir():
         if not project_dir.is_dir():
             continue
-            
+
         for jsonl_file in project_dir.glob("*.jsonl"):
             with open(jsonl_file) as f:
                 for line in f:
@@ -43,13 +47,24 @@ def extract_all_sessions():
                     try:
                         msg = json.loads(line)
                         session_id = msg.get("sessionId")
+
+                        # Apply project filter
+                        project_path = msg.get("cwd", "")
+                        if not runtime_config.matches_project(project_path):
+                            continue
+
+                        # Apply date filter
+                        timestamp = msg.get("timestamp", "")
+                        if timestamp and not runtime_config.matches_date_range(timestamp):
+                            continue
+
                         if session_id:
                             if session_id not in all_sessions:
                                 all_sessions[session_id] = []
                             all_sessions[session_id].append(msg)
                     except json.JSONDecodeError:
                         continue
-    
+
     return all_sessions
 
 def analyze_delegation_chain(messages):
@@ -102,46 +117,90 @@ def analyze_delegation_chain(messages):
     return delegations
 
 def main():
-    print("Loading known delegations...", flush=True)
-    known_delegations = load_known_delegations()
-    print(f"Found {len(known_delegations)} sessions with delegations", flush=True)
-    
-    print("Scanning all Claude projects...", flush=True)
-    all_sessions = extract_all_sessions()
-    print(f"Found {len(all_sessions)} total sessions", flush=True)
-    
-    # Match and analyze
-    matched_sessions = []
-    total_delegations = 0
-    
-    for session_id in known_delegations.keys():
-        if session_id in all_sessions:
-            messages = sorted(all_sessions[session_id], key=lambda x: x.get("timestamp", ""))
-            delegations = analyze_delegation_chain(messages)
-            
-            matched_sessions.append({
-                "session_id": session_id,
-                "message_count": len(messages),
-                "delegation_count": len(delegations),
-                "delegations": delegations
-            })
-            total_delegations += len(delegations)
-    
-    output = {
-        "extraction_date": datetime.now().isoformat(),
-        "total_sessions_scanned": len(all_sessions),
-        "matched_sessions": len(matched_sessions),
-        "total_delegations_extracted": total_delegations,
-        "sessions": matched_sessions
-    }
-    
-    with open(SESSIONS_DATA_FILE, 'w') as f:
-        json.dump(output, f, indent=2)
+    runtime_config = get_runtime_config()
 
-    print(f"\n=== EXTRACTION COMPLETE ===", flush=True)
-    print(f"Sessions matched: {len(matched_sessions)}", flush=True)
-    print(f"Delegations extracted: {total_delegations}", flush=True)
-    print(f"Output: {SESSIONS_DATA_FILE}", flush=True)
+    # If we have project/date filters, extract sessions directly without CSV matching
+    # Otherwise, use the CSV-based matching (backward compatible)
+    if runtime_config.project_filter or runtime_config.start_date or runtime_config.end_date:
+        print("Scanning Claude projects with filters...", flush=True)
+        all_sessions = extract_all_sessions()
+        print(f"Found {len(all_sessions)} sessions matching filters", flush=True)
+
+        # Analyze all filtered sessions
+        matched_sessions = []
+        total_delegations = 0
+
+        for session_id, messages in all_sessions.items():
+            messages_sorted = sorted(messages, key=lambda x: x.get("timestamp", ""))
+            delegations = analyze_delegation_chain(messages_sorted)
+
+            if delegations:  # Only include sessions with delegations
+                matched_sessions.append({
+                    "session_id": session_id,
+                    "message_count": len(messages_sorted),
+                    "delegation_count": len(delegations),
+                    "delegations": delegations
+                })
+                total_delegations += len(delegations)
+
+        output = {
+            "extraction_date": datetime.now().isoformat(),
+            "total_sessions_scanned": len(all_sessions),
+            "matched_sessions": len(matched_sessions),
+            "total_delegations_extracted": total_delegations,
+            "sessions": matched_sessions
+        }
+
+        with open(SESSIONS_DATA_FILE, 'w') as f:
+            json.dump(output, f, indent=2)
+
+        print(f"\n=== EXTRACTION COMPLETE ===", flush=True)
+        print(f"Sessions with delegations: {len(matched_sessions)}", flush=True)
+        print(f"Delegations extracted: {total_delegations}", flush=True)
+        print(f"Output: {SESSIONS_DATA_FILE}", flush=True)
+
+    else:
+        # Original CSV-based matching (backward compatible)
+        print("Loading known delegations...", flush=True)
+        known_delegations = load_known_delegations()
+        print(f"Found {len(known_delegations)} sessions with delegations", flush=True)
+
+        print("Scanning all Claude projects...", flush=True)
+        all_sessions = extract_all_sessions()
+        print(f"Found {len(all_sessions)} total sessions", flush=True)
+
+        # Match and analyze
+        matched_sessions = []
+        total_delegations = 0
+
+        for session_id in known_delegations.keys():
+            if session_id in all_sessions:
+                messages = sorted(all_sessions[session_id], key=lambda x: x.get("timestamp", ""))
+                delegations = analyze_delegation_chain(messages)
+
+                matched_sessions.append({
+                    "session_id": session_id,
+                    "message_count": len(messages),
+                    "delegation_count": len(delegations),
+                    "delegations": delegations
+                })
+                total_delegations += len(delegations)
+
+        output = {
+            "extraction_date": datetime.now().isoformat(),
+            "total_sessions_scanned": len(all_sessions),
+            "matched_sessions": len(matched_sessions),
+            "total_delegations_extracted": total_delegations,
+            "sessions": matched_sessions
+        }
+
+        with open(SESSIONS_DATA_FILE, 'w') as f:
+            json.dump(output, f, indent=2)
+
+        print(f"\n=== EXTRACTION COMPLETE ===", flush=True)
+        print(f"Sessions matched: {len(matched_sessions)}", flush=True)
+        print(f"Delegations extracted: {total_delegations}", flush=True)
+        print(f"Output: {SESSIONS_DATA_FILE}", flush=True)
 
 if __name__ == "__main__":
     main()

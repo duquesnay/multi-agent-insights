@@ -8,7 +8,9 @@ This module provides:
 """
 
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
+from dataclasses import dataclass
+from datetime import datetime
 
 # =============================================================================
 # PATH CONFIGURATION
@@ -48,17 +50,18 @@ HISTORICAL_DIR = DATA_DIR / "historical"
 # TEMPORAL PERIOD DEFINITIONS
 # =============================================================================
 
-# Period boundaries (ISO date strings)
+# Default analysis start: Multi-agent system launch in Claude Code
+DEFAULT_ANALYSIS_START = "2025-08-04"  # When multi-agent delegation became available
+
+# Historical period boundaries (for reference/comparison only)
+P1_START = "2025-08-04"
+P1_END = "2025-09-02"
 P2_START = "2025-09-03"
 P2_END = "2025-09-11"
 P3_START = "2025-09-12"
 P3_END = "2025-09-20"
 P4_START = "2025-09-21"
 P4_END = "2025-09-30"
-
-# Extended period (for v8.0 analysis including August)
-P1_START = "2025-08-04"
-P1_END = "2025-09-02"
 
 # Period metadata
 PERIOD_DEFINITIONS: Dict[str, Dict] = {
@@ -153,6 +156,125 @@ ALL_KNOWN_AGENTS = (
     SPECIALIST_AGENTS +
     COORDINATION_AGENTS
 )
+
+# =============================================================================
+# RUNTIME CONFIGURATION
+# =============================================================================
+
+@dataclass
+class RuntimeConfig:
+    """Runtime configuration for analysis scope.
+
+    Allows pipeline to be reused for different projects and time periods
+    without modifying hardcoded constants.
+    """
+    # Project filtering
+    project_filter: Optional[str] = None  # Substring to match in project paths
+
+    # Time range
+    start_date: Optional[str] = None  # ISO date string (e.g., "2025-09-26")
+    end_date: Optional[str] = None    # ISO date string (e.g., "2025-10-06")
+
+    # Period definitions (overrides PERIOD_DEFINITIONS if provided)
+    periods: Optional[Dict[str, Dict]] = None
+
+    # Discovery options
+    discover_periods: bool = False  # Use git archaeology to find periods
+
+    def get_periods(self) -> Dict[str, Dict]:
+        """Get period definitions (runtime or default)."""
+        if self.periods:
+            return self.periods
+
+        if self.discover_periods:
+            return get_dynamic_periods(use_git=True)
+
+        # Auto-create single period from start/end dates if provided
+        if self.start_date and self.end_date:
+            return {
+                "P1": {
+                    "name": "Analysis Period",
+                    "start": self.start_date,
+                    "end": self.end_date,
+                    "changes": ["Custom analysis period"],
+                    "description": f"Analysis from {self.start_date} to {self.end_date}"
+                }
+            }
+
+        # Default: use hardcoded periods
+        return PERIOD_DEFINITIONS
+
+    def matches_date_range(self, date_str: str) -> bool:
+        """Check if a date falls within the configured range.
+
+        Default: Since August 2025 (multi-agent system launch), no upper bound.
+        """
+        # Extract date part if full timestamp
+        if 'T' in date_str:
+            date_str = date_str.split('T')[0]
+
+        date_obj = datetime.fromisoformat(date_str).date()
+
+        # Default start date: multi-agent launch
+        start_date = self.start_date or DEFAULT_ANALYSIS_START
+        start = datetime.fromisoformat(start_date).date()
+        if date_obj < start:
+            return False
+
+        # End date is optional (defaults to "ongoing")
+        if self.end_date:
+            end = datetime.fromisoformat(self.end_date).date()
+            if date_obj > end:
+                return False
+
+        return True
+
+    def matches_project(self, project_path: str) -> bool:
+        """Check if a project path matches the configured filter."""
+        if not self.project_filter:
+            return True  # No filtering
+
+        return self.project_filter.lower() in project_path.lower()
+
+
+# Global runtime configuration (can be set by pipeline)
+_runtime_config: Optional[RuntimeConfig] = None
+
+def set_runtime_config(config: RuntimeConfig):
+    """Set the global runtime configuration."""
+    global _runtime_config
+    _runtime_config = config
+
+def get_runtime_config() -> RuntimeConfig:
+    """Get the current runtime configuration (or default).
+
+    Checks environment variables if no runtime config has been set.
+    This allows passing config through subprocess boundaries.
+    """
+    global _runtime_config
+    if _runtime_config is None:
+        # Try to load from environment variables
+        import os
+        project_filter = os.getenv('ANALYSIS_PROJECT_FILTER')
+        start_date = os.getenv('ANALYSIS_START_DATE')
+        end_date = os.getenv('ANALYSIS_END_DATE')
+        discover_periods = os.getenv('ANALYSIS_DISCOVER_PERIODS') == 'true'
+
+        if any([project_filter, start_date, end_date, discover_periods]):
+            _runtime_config = RuntimeConfig(
+                project_filter=project_filter,
+                start_date=start_date,
+                end_date=end_date,
+                discover_periods=discover_periods
+            )
+        else:
+            _runtime_config = RuntimeConfig()  # Default: no filtering
+    return _runtime_config
+
+def clear_runtime_config():
+    """Clear the runtime configuration (revert to defaults)."""
+    global _runtime_config
+    _runtime_config = None
 
 # =============================================================================
 # HELPER FUNCTIONS

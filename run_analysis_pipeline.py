@@ -360,12 +360,29 @@ class PipelineOrchestrator:
                 return False
 
             try:
+                # Pass runtime config through environment variables
+                import os
+                env = os.environ.copy()
+
+                from common.config import get_runtime_config
+                runtime_config = get_runtime_config()
+
+                if runtime_config.project_filter:
+                    env['ANALYSIS_PROJECT_FILTER'] = runtime_config.project_filter
+                if runtime_config.start_date:
+                    env['ANALYSIS_START_DATE'] = runtime_config.start_date
+                if runtime_config.end_date:
+                    env['ANALYSIS_END_DATE'] = runtime_config.end_date
+                if runtime_config.discover_periods:
+                    env['ANALYSIS_DISCOVER_PERIODS'] = 'true'
+
                 result = subprocess.run(
                     ["python", str(script_path)] + args,
                     cwd=PROJECT_ROOT,
                     capture_output=True,
                     text=True,
-                    timeout=600  # 10 minute timeout
+                    timeout=600,  # 10 minute timeout
+                    env=env
                 )
 
                 if result.returncode != 0:
@@ -470,8 +487,15 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Run full pipeline
+  # Run full pipeline (default: since August 2025, all projects)
   python run_analysis_pipeline.py --all
+
+  # Single project analysis
+  python run_analysis_pipeline.py --all --project "obsidian-local-rest-api" \\
+    --start-date "2025-09-26" --end-date "2025-10-06"
+
+  # Auto-discover periods from git
+  python run_analysis_pipeline.py --all --discover-periods
 
   # Run specific stages
   python run_analysis_pipeline.py --stage extraction --stage enrichment
@@ -525,7 +549,52 @@ Examples:
         help='List all pipeline stages and exit'
     )
 
+    # Runtime configuration parameters
+    parser.add_argument(
+        '--project',
+        type=str,
+        help='Filter by project path (substring match, e.g., "obsidian-local-rest-api")'
+    )
+    parser.add_argument(
+        '--start-date',
+        type=str,
+        help='Analysis start date (YYYY-MM-DD)'
+    )
+    parser.add_argument(
+        '--end-date',
+        type=str,
+        help='Analysis end date (YYYY-MM-DD)'
+    )
+    parser.add_argument(
+        '--discover-periods',
+        action='store_true',
+        help='Use git archaeology to discover period definitions'
+    )
+
     args = parser.parse_args()
+
+    # Set runtime configuration from CLI arguments
+    if args.project or args.start_date or args.end_date or args.discover_periods:
+        from common.config import RuntimeConfig, set_runtime_config
+
+        config = RuntimeConfig(
+            project_filter=args.project,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            discover_periods=args.discover_periods
+        )
+        set_runtime_config(config)
+
+        # Show configuration
+        if not args.quiet:
+            print("Runtime Configuration:")
+            if args.project:
+                print(f"  Project filter: {args.project}")
+            if args.start_date or args.end_date:
+                print(f"  Date range: {args.start_date or 'any'} to {args.end_date or 'any'}")
+            if args.discover_periods:
+                print(f"  Period discovery: git archaeology")
+            print()
 
     # List stages
     if args.list_stages:

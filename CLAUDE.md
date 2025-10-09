@@ -6,6 +6,60 @@ Comprendre l'**évolution du système de délégation multi-agents** pendant sep
 
 **Focus**: Le système lui-même ET ses transformations temporelles.
 
+---
+
+## ⚠️ CRITICAL: Infrastructure-First Principle
+
+**Before writing ANY custom extraction/analysis code:**
+
+1. **Check existing tools first**: `python run_analysis_pipeline.py --help`
+2. **Try pipeline with filters**: Use `--project`, `--start-date`, `--end-date`
+3. **Only if pipeline cannot handle**: Then consider custom scripts
+
+### Common Mistake
+
+❌ **WRONG**: Writing `/tmp/analyze_*.py` without checking if pipeline supports your use case
+
+✅ **RIGHT**: Using existing pipeline with runtime configuration
+
+### Decision Workflow
+
+```
+Need data?
+  → Check --help
+    → Pipeline supports it?
+      → Use pipeline ✅
+    → Pipeline doesn't support?
+      → Write custom script (document why pipeline couldn't handle it)
+```
+
+### Examples
+
+**✅ RIGHT WAY** (Recent data from specific project):
+```bash
+python run_analysis_pipeline.py \
+  --project "cold-chamber" \
+  --start-date 2025-10-08 \
+  --end-date 2025-10-08 \
+  --all
+```
+
+**❌ WRONG WAY** (Custom script without checking):
+```python
+# DON'T do this without checking pipeline first:
+cat > /tmp/analyze_recent.py << 'EOF'
+import json
+from pathlib import Path
+# ... reinventing pipeline functionality ...
+EOF
+```
+
+**Why this matters**: The pipeline handles project filtering, date ranges, caching, data schema, and error handling. Custom scripts bypass all this infrastructure and create maintenance debt.
+
+**See**: "Running Analyses" section below for detailed pipeline usage.
+
+---
+
 ## Découverte Méthodologique Critique
 
 **Le système a évolué pendant la période d'observation.**
@@ -194,6 +248,25 @@ Avertissement Méthodologique
 ---
 
 ## Running Analyses
+
+### Infrastructure-First Principle
+
+**Before writing custom extraction/analysis code**: Check if the existing pipeline handles your use case.
+
+The `run_analysis_pipeline.py` supports runtime configuration for different projects and time periods:
+
+```bash
+# Project-specific analysis with custom date range
+python run_analysis_pipeline.py \
+  --project "project-name" \
+  --start-date 2025-10-01 \
+  --end-date 2025-10-07 \
+  --discover-periods \
+  --all
+
+# Use existing pipeline infrastructure - it's configurable
+# Only create custom scripts if the pipeline cannot handle your use case
+```
 
 ### Full Pipeline
 
