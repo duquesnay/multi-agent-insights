@@ -27,8 +27,8 @@ from typing import List, Dict, Optional
 from datetime import datetime
 import json
 
-from common.analysis_strategy import AnalysisStrategy, CompositeAnalysisStrategy
-from strategies import (
+from tools.common.analysis_strategy import AnalysisStrategy, CompositeAnalysisStrategy
+from tools.strategies import (
     MetricsAnalysisStrategy,
     MarathonAnalysisStrategy,
     RoutingQualityAnalysisStrategy
@@ -146,7 +146,7 @@ class AnalysisRunner:
         """
         # Load data once
         print("Loading data...")
-        from common.data_repository import load_delegations, load_sessions
+        from tools.common.data_repository import load_delegations, load_sessions
 
         data = {
             'delegations': load_delegations(),

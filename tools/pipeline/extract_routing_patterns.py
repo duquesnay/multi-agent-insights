@@ -9,7 +9,7 @@ from datetime import datetime
 from collections import defaultdict, Counter
 from typing import Dict, List, Tuple
 
-from common.config import PERIODS, ENRICHED_SESSIONS_FILE, ROUTING_PATTERNS_FILE
+from tools.common.config import PERIODS, ENRICHED_SESSIONS_FILE, ROUTING_PATTERNS_FILE
 
 def parse_timestamp(ts_str: str) -> datetime:
     """Parse ISO timestamp."""

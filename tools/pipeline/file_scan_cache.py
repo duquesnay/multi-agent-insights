@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Dict, List, Any
 from datetime import datetime
 
-from common.config import DATA_DIR
+from tools.common.config import DATA_DIR
 
 # Cache file locations
 CACHE_DIR = DATA_DIR / ".cache"
@@ -175,7 +175,7 @@ def get_cache_info() -> Dict[str, Any]:
 
 if __name__ == "__main__":
     # Test cache functionality
-    from common.config import PROJECTS_DIR
+    from tools.common.config import PROJECTS_DIR
 
     print("=== Cache Information ===")
     info = get_cache_info()

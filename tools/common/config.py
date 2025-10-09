@@ -16,8 +16,8 @@ from datetime import datetime
 # PATH CONFIGURATION
 # =============================================================================
 
-# Project root is parent of common/ directory
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# Project root is parent of tools/ directory (tools/common/ -> tools/ -> project root)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # Data directories
 DATA_DIR = PROJECT_ROOT / "data"

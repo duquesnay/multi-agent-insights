@@ -5,7 +5,7 @@ Implements ADR-004: Strategy Pattern for Pluggable Analyses
 Enables adding new analyses without modifying existing code (Open/Closed Principle).
 
 Usage:
-    from common.analysis_strategy import AnalysisStrategy, AnalysisResult
+    from tools.common.analysis_strategy import AnalysisStrategy, AnalysisResult
 
     class MyCustomAnalysis(AnalysisStrategy):
         def analyze(self, data):
@@ -246,7 +246,7 @@ class AnalysisStrategy(ABC):
         Returns:
             Dictionary with 'delegations' and 'sessions' keys
         """
-        from common.data_repository import load_delegations, load_sessions
+        from tools.common.data_repository import load_delegations, load_sessions
 
         return {
             'delegations': load_delegations(),

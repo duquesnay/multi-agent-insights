@@ -9,7 +9,7 @@ from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 
-from common.config import AGENT_CALLS_CSV, SESSIONS_DATA_FILE, PROJECTS_DIR, get_runtime_config
+from tools.common.config import AGENT_CALLS_CSV, SESSIONS_DATA_FILE, PROJECTS_DIR, DATA_DIR, get_runtime_config
 
 def load_known_delegations():
     """Load the 1246 delegations we know about."""
@@ -41,7 +41,7 @@ def extract_all_sessions():
         projects_dir = Path.home() / ".claude/projects"
         print(f"Reading from LIVE source: {projects_dir}", flush=True)
     else:
-        projects_dir = Path(__file__).parent / "data" / "conversations"
+        projects_dir = DATA_DIR / "conversations"
         print(f"Reading from BACKUP: {projects_dir}", flush=True)
         if not projects_dir.exists():
             print(f"⚠️  Backup not found. Run with --source-live or backup first.", flush=True)

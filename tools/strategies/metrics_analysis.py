@@ -15,8 +15,8 @@ from collections import defaultdict
 from datetime import datetime
 import statistics
 
-from common.analysis_strategy import AnalysisStrategy, AnalysisResult
-from common.metrics_service import extract_delegation_metrics, calculate_token_totals
+from tools.common.analysis_strategy import AnalysisStrategy, AnalysisResult
+from tools.common.metrics_service import extract_delegation_metrics, calculate_token_totals
 
 
 class MetricsAnalysisStrategy(AnalysisStrategy):

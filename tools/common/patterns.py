@@ -8,7 +8,7 @@ Pre-compiled patterns provide 3-5x speedup over string operations by:
 - Avoiding repeated string operations on large texts
 
 Usage:
-    from common.patterns import TESTING_PATTERN, match_any
+    from tools.common.patterns import TESTING_PATTERN, match_any
 
     if TESTING_PATTERN.search(text):
         # Found testing keywords

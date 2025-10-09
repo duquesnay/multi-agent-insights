@@ -13,7 +13,7 @@ Converted from: analyze_routing_quality.py
 from typing import Dict, Any, List
 from collections import defaultdict
 
-from common.analysis_strategy import AnalysisStrategy, AnalysisResult
+from tools.common.analysis_strategy import AnalysisStrategy, AnalysisResult
 
 
 class RoutingQualityAnalysisStrategy(AnalysisStrategy):
@@ -26,7 +26,7 @@ class RoutingQualityAnalysisStrategy(AnalysisStrategy):
 
     def load_default_data(self) -> Dict[str, Any]:
         """Load routing patterns data instead of raw delegations."""
-        from common.data_repository import load_routing_patterns
+        from tools.common.data_repository import load_routing_patterns
 
         return {
             'routing_data': load_routing_patterns(pattern_type='by_period')

@@ -4,7 +4,7 @@ Generate comprehensive routing patterns analysis report.
 """
 
 import json
-from common.config import ROUTING_PATTERNS_FILE, ROUTING_QUALITY_FILE, GOOD_ROUTING_FILE, PROJECT_ROOT
+from tools.common.config import ROUTING_PATTERNS_FILE, ROUTING_QUALITY_FILE, GOOD_ROUTING_FILE, PROJECT_ROOT
 
 def load_all_data():
     """Load all analysis data."""

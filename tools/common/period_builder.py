@@ -55,7 +55,7 @@ class PeriodBuilder:
     """
 
     DEFAULT_REPO_PATH = Path.home() / ".claude-memories"
-    CACHE_FILE = Path(__file__).resolve().parent.parent / "data" / ".period_cache.json"
+    CACHE_FILE = Path(__file__).resolve().parent.parent.parent / "data" / ".period_cache.json"
     CACHE_TTL_HOURS = 24
 
     def __init__(

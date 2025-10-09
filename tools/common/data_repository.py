@@ -5,7 +5,7 @@ Provides centralized, validated data loading for all analysis scripts.
 Eliminates 40+ duplicate implementations with inconsistent error handling.
 
 Usage:
-    from common.data_repository import load_delegations, load_sessions
+    from tools.common.data_repository import load_delegations, load_sessions
     
     delegations = load_delegations()
     sessions = load_sessions()
@@ -20,7 +20,7 @@ from datetime import datetime
 
 # Conditional import for typed models
 try:
-    from common.models import Delegation, Session, AgentCall
+    from tools.common.models import Delegation, Session, AgentCall
     MODELS_AVAILABLE = True
 except ImportError:
     MODELS_AVAILABLE = False
@@ -42,7 +42,7 @@ class DataRepository:
             base_path: Root directory for data files. Defaults to script location.
         """
         if base_path is None:
-            base_path = Path(__file__).parent.parent
+            base_path = Path(__file__).parent.parent.parent
         self.base_path = Path(base_path)
         
         # Cache for loaded data

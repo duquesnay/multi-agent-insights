@@ -12,7 +12,7 @@ Entities:
 - AgentCall: Agent usage from CSV metadata
 
 Usage:
-    from common.models import Delegation, Session, Period
+    from tools.common.models import Delegation, Session, Period
 
     # Load from dict
     delegation = Delegation.from_dict(raw_data)

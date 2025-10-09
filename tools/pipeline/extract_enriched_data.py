@@ -13,8 +13,8 @@ from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 
-from common.config import ENRICHED_SESSIONS_FILE, PROJECTS_DIR
-from common.schema_validator import SchemaValidator
+from tools.common.config import ENRICHED_SESSIONS_FILE, PROJECTS_DIR
+from tools.common.schema_validator import SchemaValidator
 from file_scan_cache import (
     is_cache_valid,
     load_sessions_cache,

@@ -10,7 +10,7 @@ Available Strategies:
     - RoutingQualityAnalysisStrategy: Routing decision quality assessment
 
 Usage:
-    from strategies import MetricsAnalysisStrategy
+    from tools.strategies import MetricsAnalysisStrategy
 
     analysis = MetricsAnalysisStrategy()
     result = analysis.run()

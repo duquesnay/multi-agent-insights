@@ -14,7 +14,7 @@ from typing import Dict, Any, List, Tuple, Optional
 from collections import defaultdict, Counter, deque
 from datetime import datetime
 
-from common.analysis_strategy import AnalysisStrategy, AnalysisResult
+from tools.common.analysis_strategy import AnalysisStrategy, AnalysisResult
 
 
 class MarathonAnalysisStrategy(AnalysisStrategy):
