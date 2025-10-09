@@ -46,15 +46,16 @@ class PeriodBuilder:
     """Builds period definitions dynamically from git archaeology.
 
     This class discovers period boundaries by analyzing git history of
-    ~/.claude-memories for agent configuration changes.
+    ~/.claude/agents for agent configuration changes, or falls back to
+    file modification times if not git-versioned.
 
     Attributes:
-        repo_path: Path to the claude-memories git repository
+        repo_path: Path to the agents directory (versioned or not)
         cache_file: Path to cache file for discovered periods
         cache_ttl_hours: Cache time-to-live in hours (default: 24)
     """
 
-    DEFAULT_REPO_PATH = Path.home() / ".claude-memories"
+    DEFAULT_REPO_PATH = Path.home() / ".claude/agents"
     CACHE_FILE = Path(__file__).resolve().parent.parent.parent / "data" / ".period_cache.json"
     CACHE_TTL_HOURS = 24
 
@@ -67,7 +68,7 @@ class PeriodBuilder:
         """Initialize PeriodBuilder.
 
         Args:
-            repo_path: Path to git repository (default: ~/.claude-memories)
+            repo_path: Path to agents directory (default: ~/.claude/agents)
             cache_file: Path to cache file (default: data/.period_cache.json)
             cache_ttl_hours: Cache TTL in hours (default: 24)
         """
@@ -141,14 +142,14 @@ class PeriodBuilder:
         # Validate repository exists
         if not self.repo_path.exists():
             raise PeriodDiscoveryError(
-                f"Git repository not found at {self.repo_path}. "
-                "Expected ~/.claude-memories to exist."
+                f"Agents directory not found at {self.repo_path}. "
+                "Expected ~/.claude/agents to exist (standard Claude Code location)."
             )
 
         if not (self.repo_path / ".git").exists():
-            raise PeriodDiscoveryError(
-                f"Directory {self.repo_path} is not a git repository."
-            )
+            # Not a git repo - fall back to file modification times
+            logger.info(f"{self.repo_path} not git-versioned. Using file modification times.")
+            return self._discover_from_file_mtimes(start_date, end_date)
 
         # Extract agent configuration changes from git log
         changes = self._extract_config_changes(start_date, end_date)
@@ -162,6 +163,76 @@ class PeriodBuilder:
         # Build period definitions from changes
         periods = self._build_periods_from_changes(changes)
 
+        return periods
+
+    def _discover_from_file_mtimes(
+        self,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None
+    ) -> Dict[str, Dict]:
+        """Discover periods from file modification times (fallback for non-git).
+
+        Args:
+            start_date: Start date for filtering (ISO format)
+            end_date: End date for filtering (ISO format)
+
+        Returns:
+            Dictionary of period definitions based on file mtimes
+
+        Raises:
+            PeriodDiscoveryError: If no agent files found
+        """
+        # Get all agent definition files
+        agent_files = list(self.repo_path.glob("*.md"))
+
+        if not agent_files:
+            raise PeriodDiscoveryError(
+                f"No agent definition files (*.md) found in {self.repo_path}"
+            )
+
+        # Get modification times
+        file_mtimes = []
+        for file in agent_files:
+            mtime = datetime.fromtimestamp(file.stat().st_mtime)
+            agent_name = file.stem  # filename without .md
+
+            # Filter by date range if specified
+            mtime_str = mtime.strftime("%Y-%m-%d")
+            if start_date and mtime_str < start_date:
+                continue
+            if end_date and mtime_str > end_date:
+                continue
+
+            file_mtimes.append((mtime_str, agent_name, file.name))
+
+        if not file_mtimes:
+            logger.warning("No agent files within specified date range. Using fallback.")
+            return self._get_fallback_periods()
+
+        # Sort by modification time
+        file_mtimes.sort(key=lambda x: x[0])
+
+        # Group by date (files modified on same day)
+        changes_by_date = {}
+        for mtime_str, agent_name, filename in file_mtimes:
+            if mtime_str not in changes_by_date:
+                changes_by_date[mtime_str] = []
+            changes_by_date[mtime_str].append(f"update {agent_name}")
+
+        # Build period changes from file mtimes
+        changes = []
+        for date, agent_changes in sorted(changes_by_date.items()):
+            changes.append(PeriodChange(
+                date=date,
+                commit_hash="file-mtime",
+                message=f"Agent modifications: {', '.join(agent_changes)}",
+                changes=agent_changes
+            ))
+
+        # Build periods from changes
+        periods = self._build_periods_from_changes(changes)
+
+        logger.info(f"Discovered {len(periods)} periods from file modification times")
         return periods
 
     def _extract_config_changes(
@@ -635,6 +706,6 @@ if __name__ == "__main__":
             print(f"     Changes: {', '.join(pdata['changes'])}")
     except PeriodDiscoveryError as e:
         print(f"   Git discovery failed: {e}")
-        print("   This is expected if ~/.claude-memories doesn't exist")
+        print("   This is expected if ~/.claude/agents is not git-versioned")
 
     print("\n✅ Demo complete")
