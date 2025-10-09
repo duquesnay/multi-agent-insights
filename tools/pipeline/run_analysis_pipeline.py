@@ -36,7 +36,7 @@ from typing import List, Dict, Optional, Set, Tuple
 from datetime import datetime
 import json
 
-from common.config import (
+from tools.common.config import (
     PROJECT_ROOT,
     DATA_DIR,
     RAW_DATA_DIR,
@@ -127,7 +127,7 @@ STAGE_DEFINITIONS: Dict[PipelineStage, StageDefinition] = {
         name="Conversation Backup",
         description="Archive raw .jsonl conversations from ~/.claude/projects/",
         scripts=[
-            "scripts/copy_conversations.py",
+            "tools/scripts/copy_conversations.py",
         ],
         produces=[
             DATA_DIR / "conversations" / ".backup_complete",  # Marker file
@@ -143,8 +143,8 @@ STAGE_DEFINITIONS: Dict[PipelineStage, StageDefinition] = {
         name="Data Extraction",
         description="Extract raw session data from Claude projects",
         scripts=[
-            "extract_all_sessions.py",
-            "extract_enriched_data.py",
+            "tools/pipeline/extract_all_sessions.py",
+            "tools/pipeline/extract_enriched_data.py",
         ],
         produces=[
             SESSIONS_DATA_FILE,
@@ -161,8 +161,8 @@ STAGE_DEFINITIONS: Dict[PipelineStage, StageDefinition] = {
         name="Data Enrichment",
         description="Add metadata, cross-references, and routing patterns",
         scripts=[
-            "extract_routing_patterns.py",
-            "classify_marathons.py",
+            "tools/pipeline/extract_routing_patterns.py",
+            "tools/pipeline/classify_marathons.py",
         ],
         produces=[
             ROUTING_PATTERNS_FILE,
@@ -179,7 +179,7 @@ STAGE_DEFINITIONS: Dict[PipelineStage, StageDefinition] = {
         name="Data Segmentation",
         description="Segment data by time periods and categories",
         scripts=[
-            "segment_data.py",
+            "tools/pipeline/segment_data.py",
         ],
         produces=[
             TEMPORAL_SEGMENTATION_FILE,
@@ -195,7 +195,7 @@ STAGE_DEFINITIONS: Dict[PipelineStage, StageDefinition] = {
         name="Analysis Execution",
         description="Run metrics, pattern detection, and insights generation",
         scripts=[
-            "analysis_runner.py --all",
+            "tools/pipeline/analysis_runner.py --all",
         ],
         produces=[
             PROJECT_ROOT / "analysis_results" / "aggregate_results.json",
@@ -212,7 +212,7 @@ STAGE_DEFINITIONS: Dict[PipelineStage, StageDefinition] = {
         name="Report Generation",
         description="Generate markdown reports from analysis results",
         scripts=[
-            "generate_routing_report.py",
+            "tools/pipeline/generate_routing_report.py",
         ],
         produces=[
             DATA_DIR / "routing_report.md",
@@ -251,7 +251,7 @@ class PipelineOrchestrator:
         Returns:
             (success, missing_dependencies)
         """
-        from common.config import PROJECTS_DIR
+        from tools.common.config import PROJECTS_DIR
 
         missing = []
         if not PROJECTS_DIR.exists():
@@ -381,7 +381,7 @@ class PipelineOrchestrator:
                 import os
                 env = os.environ.copy()
 
-                from common.config import get_runtime_config
+                from tools.common.config import get_runtime_config
                 runtime_config = get_runtime_config()
 
                 if runtime_config.project_filter:
@@ -457,7 +457,14 @@ class PipelineOrchestrator:
         self.log("=" * 80)
 
         if dry_run:
-            self.log("🔍 DRY RUN MODE - No changes will be made\n")
+            self.log("🔍 DRY RUN MODE - No changes will be made")
+
+        # Show planned stages
+        self.log(f"\nPlanned stages ({len(stages)}):")
+        for stage in stages:
+            stage_def = STAGE_DEFINITIONS[stage]
+            self.log(f"  {stage.value:15} - {stage_def.name}")
+        self.log("")
 
         # Check external dependencies first
         success, missing = self.check_external_dependencies()
@@ -606,7 +613,7 @@ Examples:
 
     # Set runtime configuration from CLI arguments
     if args.project or args.start_date or args.end_date or args.discover_periods or args.source_live:
-        from common.config import RuntimeConfig, set_runtime_config
+        from tools.common.config import RuntimeConfig, set_runtime_config
 
         config = RuntimeConfig(
             project_filter=args.project,
