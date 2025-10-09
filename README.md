@@ -17,23 +17,41 @@ Using the freshly released Sonnet 4.5 at the time of writing. No idea how this p
 
 ## Running an Assessment
 
-### Option 1: Via Slash Command (In Claude Code Conversation)
+### Quick Start (Recommended)
+
+```bash
+./assess-agents
+```
+
+This launcher script will:
+1. Start Claude Code with the `/assess-agents` command
+2. Guide you through the VACE methodology interactively
+3. Analyze all projects by default (or specify a project name)
+
+**Custom scope**:
+```bash
+./assess-agents obsidian-local-rest-api
+```
+
+### Inside Claude Code
+
+Once launched, use the `/assess-agents` slash command directly:
 
 ```
 /assess-agents
+/assess-agents [project-name]
 ```
 
 **Default scope**: All projects since August 4, 2025 (when multi-agent delegation launched in Claude Code).
 
-**Custom scope** - specify parameters:
+The command will guide you through timeline discovery, assumptions sync, and analysis phases.
 
-```
-/assess-agents obsidian-local-rest-api
-```
+### Advanced: Direct Pipeline Use
 
-The command will prompt for period and other details, or analyze with discovered periods.
-
-### Option 2: Direct Pipeline (For Advanced Use)
+**Note**: The Python pipeline is the backend infrastructure used by the `/assess-agents` slash command. You typically don't need to run it directly unless you're:
+- Extending the analysis infrastructure
+- Running analyses without Claude Code
+- Debugging pipeline stages
 
 ```bash
 # Default: All projects since August 4, 2025 (multi-agent launch)
@@ -51,6 +69,8 @@ python run_analysis_pipeline.py --all --discover-periods
 # Specific stages only
 python run_analysis_pipeline.py --stage extraction --stage analysis
 ```
+
+See [Pipeline Technical Guide](docs/PIPELINE.md) for infrastructure details.
 
 **Scope Configuration**:
 - **Project filtering**: Analyze specific projects or all projects
