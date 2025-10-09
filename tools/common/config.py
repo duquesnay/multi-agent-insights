@@ -262,13 +262,15 @@ def get_runtime_config() -> RuntimeConfig:
         start_date = os.getenv('ANALYSIS_START_DATE')
         end_date = os.getenv('ANALYSIS_END_DATE')
         discover_periods = os.getenv('ANALYSIS_DISCOVER_PERIODS') == 'true'
+        source_live = os.getenv('ANALYSIS_SOURCE_LIVE') == 'true'
 
-        if any([project_filter, start_date, end_date, discover_periods]):
+        if any([project_filter, start_date, end_date, discover_periods, source_live]):
             _runtime_config = RuntimeConfig(
                 project_filter=project_filter,
                 start_date=start_date,
                 end_date=end_date,
-                discover_periods=discover_periods
+                discover_periods=discover_periods,
+                source_live=source_live
             )
         else:
             _runtime_config = RuntimeConfig()  # Default: no filtering
