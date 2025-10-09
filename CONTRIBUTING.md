@@ -4,8 +4,8 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/duquesnay/multi-agent-insights.git
-cd multi-agent-insights
+git clone https://github.com/duquesnay/agent-retrospective.git
+cd agent-retrospective
 
 # Install dependencies
 pip install -r requirements-test.txt
