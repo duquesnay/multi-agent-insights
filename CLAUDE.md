@@ -22,6 +22,29 @@ Comprendre l'**évolution du système de délégation multi-agents** pendant sep
 
 ✅ **RIGHT**: Using existing pipeline with runtime configuration
 
+### Scratch Scripts for One-Off Analysis
+
+If you **must** write a temporary exploration script (after checking pipeline cannot handle it):
+
+**Use the `scratch/` directory** (git-ignored, organized, discoverable):
+```bash
+# Create temporary script in scratch/
+cat > scratch/explore_cold_chamber_oct8.py << 'EOF'
+import sys
+sys.path.insert(0, '.')
+from tools.common.data_repository import load_sessions
+
+sessions = load_sessions()
+# ... your exploration code ...
+EOF
+
+python scratch/explore_cold_chamber_oct8.py
+```
+
+**NOT in `/tmp`** (hard to find, lost across sessions, no context)
+
+See `scratch/README.md` for naming conventions and guidelines.
+
 ### Decision Workflow
 
 ```

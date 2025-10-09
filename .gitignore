@@ -3,6 +3,10 @@ data/
 analysis_results/
 pipeline_execution_log.json
 
+# Scratch directory for temporary analysis scripts
+scratch/
+!scratch/README.md
+
 # Analysis results and reports (private data)
 analyses/
 analysis/
